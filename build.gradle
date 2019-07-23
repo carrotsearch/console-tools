@@ -1,0 +1,219 @@
+
+plugins {
+  id 'com.moowork.node' version '1.3.1' apply false
+  id 'com.diffplug.gradle.spotless' version "3.23.0" apply false
+  id "com.github.ben-manes.versions" version "0.21.0"
+  id "com.palantir.consistent-versions" version "1.8.0"
+}
+
+apply from: file('gradle/min-gradle-version.gradle')
+apply from: file('gradle/gitinfo.gradle')
+apply from: file('gradle/buildinfo.gradle')
+
+apply plugin: 'base'
+
+def currentVersion = '1.0.4-SNAPSHOT'
+
+ext {
+  gitRev = gitStatus.id
+
+  licenseHeader = file('etc/license-header.txt')
+
+  replaceTokens = [
+    'version': currentVersion,
+    'gitRev': gitRev,
+    'buildDate': buildDate,
+    'buildDateTrimmed': buildDateTrimmed
+  ]
+
+  isIdea = System.getProperty("idea.active") != null || gradle.startParameter.taskNames.contains('idea') || gradle.startParameter.taskNames.contains('cleanIdea')
+}
+
+allprojects {
+  apply plugin: 'idea'
+
+  group "com.carrotsearch"
+  version = currentVersion
+
+  repositories {
+    mavenCentral()
+  }
+
+  idea {
+    module {
+      outputDir file('build/idea/classes/main')
+      testOutputDir file('build/idea/classes/test')
+      downloadSources = true
+    }
+
+    project {
+      jdkName = '9'
+      languageLevel = '1.9'
+    }
+  }
+}
+
+allprojects {
+  apply plugin: 'java'
+  apply plugin: 'com.diffplug.gradle.spotless'
+
+  sourceCompatibility = 1.9
+  targetCompatibility = 1.9
+
+  dependencies {
+    testImplementation "com.carrotsearch.randomizedtesting:randomizedtesting-runner"
+    testImplementation "org.assertj:assertj-core"
+    testImplementation "com.google.guava:guava"
+  }
+
+  spotless {
+    java {
+      licenseHeaderFile licenseHeader
+      lineEndings 'UNIX'
+      endWithNewline()
+      googleJavaFormat('1.7')
+    }
+  }
+
+  test {
+    maxParallelForks = (int) Math.max(Runtime.runtime.availableProcessors() / 2.0, 4.0)
+  }
+
+  tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+    options.encoding = "UTF-8"
+  }
+
+  tasks.withType(Jar) {
+    manifest {
+      attributes("Implementation-Title": project.name,
+                 "Implementation-Version": "${project.version} (${gitRev}, ${buildDateTrimmed})")
+    }
+  }
+
+  javadoc {
+    title = "${project.name} ${project.version} API Documentation"
+
+    if (JavaVersion.current().isJava9Compatible()) {
+      options.addBooleanOption('html5', true)
+      options.addStringOption('Xdoclint:all,-missing', '-noindex')
+    }
+
+    options.encoding = 'UTF-8'
+  }
+
+  afterEvaluate {
+    check.dependsOn(spotlessCheck)
+    precommit.dependsOn(spotlessCheck)
+
+    tasks.withType(AbstractArchiveTask) {
+      duplicatesStrategy = 'fail'
+    }
+  }
+}
+
+task precommit {
+  description "Runs code quality and other precommit checks"
+  group "Verification"
+}
+
+
+configure(project) {
+  apply plugin: 'maven-publish'
+  apply plugin: 'signing'
+
+  def mavenBuildRepo = "${rootProject.buildDir}/maven"
+
+  task sourcesJar(type: Jar, dependsOn: classes) {
+    archiveClassifier = 'sources'
+    from sourceSets.main.allJava
+  }
+
+  task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier = 'javadoc'
+    from javadoc.destinationDir
+  }
+
+  publishing {
+    repositories {
+      maven {
+        name = 'build'
+        url = mavenBuildRepo
+      }
+      maven {
+        name = 'sonatype'
+        url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+        credentials {
+            if (project.hasProperty('nexusUsername')) {
+              username project.nexusUsername
+            }
+            if (project.hasProperty('nexusPassword')) {
+              password project.nexusPassword
+            }
+        }
+      }
+    }
+
+    publications {
+      maven(MavenPublication) {
+        afterEvaluate {
+          from components.java
+          artifactId = project.archivesBaseName
+
+          artifact sourcesJar
+          artifact javadocJar
+        }
+
+        pom {
+          name = "${project.name}"
+          description = "${project.name}"
+          url = 'https://github.com/carrotsearch/procfork'
+          inceptionYear = "2019"
+          licenses {
+            license {
+              name = 'BSD License'
+              url = 'https://github.com/carrotsearch/procfork/blob/master/LICENSE.txt'
+            }
+          }
+          organization {
+            name = "Carrot Search s.c."
+            url = "https://www.carrotsearch.com"
+          }
+          developers {
+            developer {
+              id = 'stanislaw.osinski'
+              name = 'Stanisław Osiński'
+              email = 'stanislaw.osinski@carrotsearch.com'
+            }
+            developer {
+              id = 'dawid.weiss'
+              name = 'Dawid Weiss'
+              email = 'dawid.weiss@carrotsearch.com'
+            }
+          }
+          scm {
+            connection = 'scm:git:git@github.com:carrotsearch/procfork.git'
+            developerConnection = 'scm:git:git@github.com:carrotsearch/procfork.git'
+            url = 'https://github.com/carrotsearch/procfork'
+          }
+        }
+      }
+    }
+  }
+
+  signing {
+    sign publishing.publications.maven
+  }
+
+  afterEvaluate {
+    task mavenLocal(dependsOn: publishMavenPublicationToBuildRepository) {
+      group "Publishing"
+      description "Publish Maven artifacts locally to " + file(mavenBuildRepo)
+    }
+
+    task mavenSonatype(dependsOn: publishMavenPublicationToSonatypeRepository) {
+      group "Publishing"
+      description "Publish Maven artifacts to Sonatype OSS Nexus"
+    }
+  }
+}
