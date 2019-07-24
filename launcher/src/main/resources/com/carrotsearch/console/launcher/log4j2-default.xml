@@ -6,7 +6,6 @@
 
   <Appenders>
     <xi:include href="appender-console-info.xml" />
-    <xi:include href="appender-console-warn.xml" />
   </Appenders>
 
   <Loggers>
@@ -14,8 +13,8 @@
       <AppenderRef ref="appender-console-info" />
     </Logger>
 
-    <Root level="DEBUG">
-      <AppenderRef ref="appender-console-warn" />
+    <Root level="WARN">
+      <AppenderRef ref="appender-console-info" />
     </Root>
   </Loggers>
 </Configuration>

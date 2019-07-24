@@ -26,45 +26,37 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
 abstract class TestBase extends RandomizedTest {
-  // static AtomicInteger cnt = new AtomicInteger();
-
   public static List<String> captureLogs(Logger logger, ThrowingCallable c) throws Throwable {
-    // String id = "#" + cnt.incrementAndGet();
-
     List<String> logs = new ArrayList<>();
     PropertyChangeListener propertyChangeListener =
         (prop) -> {
           if (Objects.equals(prop.getPropertyName(), LoggerContext.PROPERTY_CONFIG)) {
             BiConsumer<Logger, LogEventData> evConsumer =
                 (lgr, event) -> {
-                  // System.out.println("# consume event: " + id + ": " + event.getMessage());
                   logs.add(event.getMessage());
                 };
-            LogMonitorAppender appender = new LogMonitorAppender(logger, evConsumer);
-            appender.start();
-
             LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
             Configuration configuration = ctx.getConfiguration();
 
+            LogMonitorAppender appender = new LogMonitorAppender(logger, evConsumer);
+            appender.start();
             LoggerConfig loggerConfig = configuration.getLoggerConfig(logger.getName());
+
             loggerConfig.addAppender(appender, Level.ALL, null);
           }
         };
 
     LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
     try {
-      // System.out.println("# addPropertyChangeListener: " + id);
       ctx.addPropertyChangeListener(propertyChangeListener);
       ctx.reconfigure();
       c.call();
       return logs;
     } finally {
       ctx.removePropertyChangeListener(propertyChangeListener);
-      // System.out.println("# removePropertyChangeListener: " + id);
     }
   }
 

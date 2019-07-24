@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Configuration xmlns:xi="http://www.w3.org/2001/XInclude" 
+               status="WARN" 
+               packages="com.carrotsearch.progresso.log4j">
+
+  <Appenders>
+    <xi:include href="appender-console-warn.xml" />
+    <xi:include href="appender-console-verbose.xml" />
+  </Appenders>
+
+  <Loggers>
+    <Logger level="DEBUG" name="console" additivity="false">
+      <AppenderRef ref="appender-console-verbose" />
+    </Logger>
+
+    <Root level="WARN">
+      <AppenderRef ref="appender-console-warn" />
+    </Root>
+  </Loggers>
+</Configuration>

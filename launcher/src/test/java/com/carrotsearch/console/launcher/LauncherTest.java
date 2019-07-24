@@ -10,6 +10,7 @@ import com.carrotsearch.console.jcommander.Parameter;
 import com.carrotsearch.console.jcommander.Parameters;
 import com.carrotsearch.randomizedtesting.annotations.Seed;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,12 +144,50 @@ public class LauncherTest extends TestBase {
       }
     }
 
+    ThrowableAssert.ThrowingCallable call;
+
     // Default level.
-    List<String> logs = captureLogs(Loggers.ROOT, () -> {
-      new Launcher2().runCommand(new Cmd());
-    });
-    System.out.println(logs);
-    Assertions.assertThat(logs)
-        .containsExactly();
+    call = () -> new Launcher2().runCommand(new Cmd());
+
+    Assertions.assertThat(captureLogs(Loggers.ROOT, call))
+        .containsExactly("internal:warn", "internal:error");
+    Assertions.assertThat(captureLogs(Loggers.CONSOLE, call))
+        .containsExactly("console:info", "console:warn", "console:error");
+
+    // --quiet
+    call = () -> new Launcher2().runCommand(new Cmd(), LoggingParameters.OPT_QUIET);
+
+    Assertions.assertThat(captureLogs(Loggers.ROOT, call))
+        .containsExactly("internal:warn", "internal:error");
+    Assertions.assertThat(captureLogs(Loggers.CONSOLE, call))
+        .containsExactly("console:warn", "console:error");
+
+    // --verbose
+    call = () -> new Launcher2().runCommand(new Cmd(), LoggingParameters.OPT_VERBOSE);
+
+    Assertions.assertThat(captureLogs(Loggers.ROOT, call))
+        .containsExactly("internal:warn", "internal:error");
+    Assertions.assertThat(captureLogs(Loggers.CONSOLE, call))
+        .containsExactly("console:debug", "console:info", "console:warn", "console:error");
+
+    // --trace
+    call = () -> new Launcher2().runCommand(new Cmd(), LoggingParameters.OPT_TRACE);
+
+    Assertions.assertThat(captureLogs(Loggers.ROOT, call))
+        .containsExactly(
+            "console:trace",
+            "console:debug",
+            "console:info",
+            "console:warn",
+            "console:error",
+            "internal:trace",
+            "internal:debug",
+            "internal:info",
+            "internal:warn",
+            "internal:error");
+
+    Assertions.assertThat(captureLogs(Loggers.CONSOLE, call))
+        .containsExactly(
+            "console:trace", "console:debug", "console:info", "console:warn", "console:error");
   }
 }
