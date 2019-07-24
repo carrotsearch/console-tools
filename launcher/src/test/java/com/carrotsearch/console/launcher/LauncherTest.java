@@ -15,6 +15,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -189,5 +191,31 @@ public class LauncherTest extends TestBase {
     Assertions.assertThat(captureLogs(Loggers.CONSOLE, call))
         .containsExactly(
             "console:trace", "console:debug", "console:info", "console:warn", "console:error");
+  }
+
+  @Test
+  public void testCustomLogConfig() throws Throwable {
+    @Parameters(commandNames = "cmd")
+    class Cmd extends Command<ExitStatus> {
+      @Override
+      public ExitStatus run() {
+        Logger internal = LoggerFactory.getLogger("com.carrotsearch.Internal");
+        internal.info("internal:info");
+        return ExitStatus.SUCCESS;
+      }
+
+      @Override
+      protected List<URI> configureLogging(List<URI> defaults) {
+        try {
+          defaults.add(LauncherTest.class.getResource("LauncherTest_customLogConfig.xml").toURI());
+          return defaults;
+        } catch (URISyntaxException e) {
+          throw new RuntimeException();
+        }
+      }
+    }
+
+    Assertions.assertThat(captureLogs(Loggers.ROOT, () -> new Launcher2().runCommand(new Cmd(), LoggingParameters.OPT_TRACE)))
+        .containsExactly("console:before", "console:after");
   }
 }

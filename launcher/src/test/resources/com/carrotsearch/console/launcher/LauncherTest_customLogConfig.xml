@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Configuration>
+  <Loggers>
+    <Logger level="INFO" name="com.carrotsearch">
+    </Logger>
+    <foo>
+  </Loggers>
+</Configuration>
