@@ -1,0 +1,14 @@
+
+dependencies {
+    api "org.slf4j:slf4j-api"
+    api "com.carrotsearch.progresso:progresso"
+
+    implementation "com.carrotsearch.progresso:progresso-log4j2"
+    implementation "com.carrotsearch.progresso:progresso-consolewidth-unixish"
+
+    implementation "org.apache.logging.log4j:log4j-core"
+    implementation "org.apache.logging.log4j:log4j-slf4j18-impl"
+
+    testImplementation "com.carrotsearch.randomizedtesting:randomizedtesting-runner"
+    testImplementation "org.assertj:assertj-core"
+}

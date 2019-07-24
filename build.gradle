@@ -45,26 +45,16 @@ allprojects {
       testOutputDir file('build/idea/classes/test')
       downloadSources = true
     }
-
-    project {
-      jdkName = '9'
-      languageLevel = '1.9'
-    }
   }
 }
 
-allprojects {
-  apply plugin: 'java'
+subprojects {
+  apply plugin: 'java-library'
+  apply plugin: 'idea'
   apply plugin: 'com.diffplug.gradle.spotless'
 
   sourceCompatibility = 1.9
   targetCompatibility = 1.9
-
-  dependencies {
-    testImplementation "com.carrotsearch.randomizedtesting:randomizedtesting-runner"
-    testImplementation "org.assertj:assertj-core"
-    testImplementation "com.google.guava:guava"
-  }
 
   spotless {
     java {
@@ -80,7 +70,8 @@ allprojects {
   }
 
   tasks.withType(JavaCompile) {
-    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+    // << "-Xlint:unchecked"
+    options.compilerArgs << "-Xlint:deprecation"
     options.encoding = "UTF-8"
   }
 
@@ -118,7 +109,7 @@ task precommit {
 }
 
 
-configure(project) {
+subprojects {
   apply plugin: 'maven-publish'
   apply plugin: 'signing'
 
@@ -167,12 +158,12 @@ configure(project) {
         pom {
           name = "${project.name}"
           description = "${project.name}"
-          url = 'https://github.com/carrotsearch/procfork'
+          url = 'https://github.com/carrotsearch/console-tools'
           inceptionYear = "2019"
           licenses {
             license {
               name = 'BSD License'
-              url = 'https://github.com/carrotsearch/procfork/blob/master/LICENSE.txt'
+              url = 'https://github.com/carrotsearch/console-tools/blob/master/LICENSE.txt'
             }
           }
           organization {
@@ -192,9 +183,9 @@ configure(project) {
             }
           }
           scm {
-            connection = 'scm:git:git@github.com:carrotsearch/procfork.git'
-            developerConnection = 'scm:git:git@github.com:carrotsearch/procfork.git'
-            url = 'https://github.com/carrotsearch/procfork'
+            connection = 'scm:git:git@github.com:carrotsearch/console-tools.git'
+            developerConnection = 'scm:git:git@github.com:carrotsearch/console-tools.git'
+            url = 'https://github.com/carrotsearch/console-tools'
           }
         }
       }

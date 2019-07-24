@@ -1,0 +1,3 @@
+<ProgressAwareAppender name="appender-console-warn" printStackTraces="false">
+  <ThresholdFilter level="WARN" />
+</ProgressAwareAppender>

@@ -1,0 +1,3 @@
+<ProgressAwareAppender name="appender-console" printStackTraces="false">
+  <!-- No filtering. -->
+</ProgressAwareAppender>

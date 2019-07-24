@@ -1,1 +1,8 @@
 # Run ./gradlew --write-locks to regenerate this file
+com.carrotsearch.progresso:progresso:1.6.1 (3 constraints: 3830ab15)
+com.carrotsearch.progresso:progresso-consolewidth-unixish:1.6.1 (1 constraints: 0a050336)
+com.carrotsearch.progresso:progresso-log4j2:1.6.1 (1 constraints: 0a050336)
+org.apache.logging.log4j:log4j-api:2.12.0 (2 constraints: f11f3c82)
+org.apache.logging.log4j:log4j-core:2.12.0 (3 constraints: 1929df6c)
+org.apache.logging.log4j:log4j-slf4j18-impl:2.12.0 (1 constraints: 3705353b)
+org.slf4j:slf4j-api:1.8.0-beta2 (3 constraints: 6233ca8c)

@@ -1,0 +1,22 @@
+/*
+ * console-tools
+ *
+ * Copyright (C) 2019, Carrot Search s.c.
+ * All rights reserved.
+ */
+package com.carrotsearch.console.jcommander;
+
+/**
+ * Allows the specification of default values.
+ *
+ * @author cbeust
+ */
+public interface IDefaultProvider {
+
+  /**
+   * @param optionName The name of the option as specified in the names() attribute of
+   *     the @Parameter option (e.g. "-file").
+   * @return the default value for this option.
+   */
+  String getDefaultValueFor(String optionName);
+}

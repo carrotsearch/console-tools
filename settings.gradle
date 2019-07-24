@@ -1,2 +1,4 @@
 
+include 'launcher'
+
 rootProject.name = 'console-tools'

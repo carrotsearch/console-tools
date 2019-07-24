@@ -1,0 +1,2 @@
+<ProgressAwareAppender name="appender-console-verbose" printStackTraces="true">
+</ProgressAwareAppender>
