@@ -1,0 +1,5 @@
+
+dependencies {
+    testImplementation "com.carrotsearch.randomizedtesting:randomizedtesting-runner"
+    testImplementation "org.assertj:assertj-core"
+}
