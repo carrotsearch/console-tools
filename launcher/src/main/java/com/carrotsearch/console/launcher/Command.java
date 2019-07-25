@@ -12,9 +12,12 @@ import java.net.URI;
 import java.util.List;
 
 public abstract class Command<T extends ExitCode> {
-  public static final String OPTION_HELP = "--help";
+  public static final String OPT_HELP = "--help";
 
   @ParametersDelegate public LoggingParameters logging = new LoggingParameters();
+
+  @ParametersDelegate
+  protected SysPropertiesParameters sysProps = new SysPropertiesParameters();
 
   @Parameter(
       hidden = true,

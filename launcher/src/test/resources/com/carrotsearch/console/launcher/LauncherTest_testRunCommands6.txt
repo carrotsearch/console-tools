@@ -1,0 +1,1 @@
+Invalid arguments (type --help for help): The following option is required: --opt1

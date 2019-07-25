@@ -7,5 +7,9 @@
 package com.carrotsearch.console.launcher;
 
 public interface ExitCode {
-  public int processReturnValue();
+  int processReturnValue();
+
+  static ExitCode of(int value) {
+    return () -> value;
+  }
 }

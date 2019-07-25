@@ -1012,8 +1012,11 @@ public class JCommander {
     // First line of the usage
     //
     if (options.contains(UsageOptions.DISPLAY_SYNTAX_LINE)) {
-      String programName = m_programName != null ? m_programName.getDisplayName() : "<main class>";
-      out.append(indent).append("Usage: " + programName);
+      String programName = m_programName != null ? m_programName.getDisplayName() : null;
+      out.append(indent).append("Usage:");
+      if (programName != null && !programName.isEmpty()) {
+        out.append(" ").append(programName);
+      }
       if (!sorted.isEmpty()) {
         out.append(" [options]");
       }

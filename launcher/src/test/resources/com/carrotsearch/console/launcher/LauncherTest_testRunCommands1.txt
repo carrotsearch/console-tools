@@ -1,0 +1,4 @@
+Usage: launch [command] [command options]
+
+    cmd1   Command 1.
+    cmd2   Command 2.

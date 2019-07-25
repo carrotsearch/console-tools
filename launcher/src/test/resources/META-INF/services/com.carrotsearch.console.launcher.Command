@@ -1,0 +1,1 @@
+com.carrotsearch.console.launcher.LauncherSpiTest$Cmd1

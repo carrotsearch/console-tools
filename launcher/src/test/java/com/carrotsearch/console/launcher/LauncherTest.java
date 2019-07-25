@@ -8,7 +8,6 @@ package com.carrotsearch.console.launcher;
 
 import com.carrotsearch.console.jcommander.Parameter;
 import com.carrotsearch.console.jcommander.Parameters;
-import com.carrotsearch.randomizedtesting.annotations.Seed;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.Test;
@@ -19,13 +18,15 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class LauncherTest extends TestBase {
   @Test
   public void testArgsParsing() {
     @Parameters(commandNames = "cmd")
-    class Cmd extends Command<ExitStatus> {
+    class Cmd extends Command<ExitCodes> {
       @Parameter(
           names = {"--stringRequired"},
           required = true)
@@ -48,8 +49,8 @@ public class LauncherTest extends TestBase {
       public Path path;
 
       @Override
-      public ExitStatus run() {
-        return ExitStatus.SUCCESS;
+      public ExitCodes run() {
+        return ExitCodes.SUCCESS;
       }
     }
 
@@ -65,7 +66,7 @@ public class LauncherTest extends TestBase {
       "--path",
       "."
     };
-    Assertions.assertThat(new Launcher2().runCommand(cmd, args)).isEqualTo(ExitStatus.SUCCESS);
+    Assertions.assertThat(new Launcher().runCommand(cmd, args)).isEqualTo(ExitCodes.SUCCESS);
 
     Assertions.assertThat(cmd.stringRequired).isEqualTo("value1");
     Assertions.assertThat(cmd.intRequired).isEqualTo(42);
@@ -77,15 +78,15 @@ public class LauncherTest extends TestBase {
   @Test
   public void testRequiredArgMissing() throws Throwable {
     @Parameters(commandNames = "cmd")
-    class Cmd extends Command<ExitStatus> {
+    class Cmd extends Command<ExitCodes> {
       @Parameter(
           names = {"--requiredArg"},
           required = true)
       public String requiredArg;
 
       @Override
-      public ExitStatus run() {
-        return ExitStatus.SUCCESS;
+      public ExitCodes run() {
+        return ExitCodes.SUCCESS;
       }
     }
 
@@ -93,23 +94,23 @@ public class LauncherTest extends TestBase {
         "LauncherTest_testRequiredArgMissing.txt",
         () -> {
           Cmd cmd = new Cmd();
-          Assertions.assertThat(new Launcher2().runCommand(cmd))
-              .isEqualTo(ExitStatus.ERROR_INVALID_ARGUMENTS);
+          Assertions.assertThat(new Launcher().runCommand(cmd))
+              .isEqualTo(ExitCodes.ERROR_INVALID_ARGUMENTS);
         });
   }
 
   @Test
   public void testHelp() throws Throwable {
     @Parameters(commandNames = "cmd")
-    class Cmd extends Command<ExitStatus> {
+    class Cmd extends Command<ExitCodes> {
       @Parameter(
           names = {"--requiredArg"},
           required = true)
       public String requiredArg;
 
       @Override
-      public ExitStatus run() {
-        return ExitStatus.SUCCESS;
+      public ExitCodes run() {
+        return ExitCodes.SUCCESS;
       }
     }
 
@@ -117,17 +118,17 @@ public class LauncherTest extends TestBase {
         "LauncherTest_testHelp.txt",
         () -> {
           Cmd cmd = new Cmd();
-          Assertions.assertThat(new Launcher2().runCommand(cmd, "--help"))
-              .isEqualTo(ExitStatus.SUCCESS);
+          Assertions.assertThat(new Launcher().runCommand(cmd, "--help"))
+              .isEqualTo(ExitCodes.SUCCESS);
         });
   }
 
   @Test
   public void testLoggingLevels() throws Throwable {
     @Parameters(commandNames = "cmd")
-    class Cmd extends Command<ExitStatus> {
+    class Cmd extends Command<ExitCodes> {
       @Override
-      public ExitStatus run() {
+      public ExitCodes run() {
         Logger console = Loggers.CONSOLE;
         console.trace("console:trace");
         console.debug("console:debug");
@@ -142,14 +143,14 @@ public class LauncherTest extends TestBase {
         internal.warn("internal:warn");
         internal.error("internal:error");
 
-        return ExitStatus.SUCCESS;
+        return ExitCodes.SUCCESS;
       }
     }
 
     ThrowableAssert.ThrowingCallable call;
 
     // Default level.
-    call = () -> new Launcher2().runCommand(new Cmd());
+    call = () -> new Launcher().runCommand(new Cmd());
 
     Assertions.assertThat(captureLogs(Loggers.ROOT, call))
         .containsExactly("internal:warn", "internal:error");
@@ -157,7 +158,7 @@ public class LauncherTest extends TestBase {
         .containsExactly("console:info", "console:warn", "console:error");
 
     // --quiet
-    call = () -> new Launcher2().runCommand(new Cmd(), LoggingParameters.OPT_QUIET);
+    call = () -> new Launcher().runCommand(new Cmd(), LoggingParameters.OPT_QUIET);
 
     Assertions.assertThat(captureLogs(Loggers.ROOT, call))
         .containsExactly("internal:warn", "internal:error");
@@ -165,7 +166,7 @@ public class LauncherTest extends TestBase {
         .containsExactly("console:warn", "console:error");
 
     // --verbose
-    call = () -> new Launcher2().runCommand(new Cmd(), LoggingParameters.OPT_VERBOSE);
+    call = () -> new Launcher().runCommand(new Cmd(), LoggingParameters.OPT_VERBOSE);
 
     Assertions.assertThat(captureLogs(Loggers.ROOT, call))
         .containsExactly("internal:warn", "internal:error");
@@ -173,7 +174,7 @@ public class LauncherTest extends TestBase {
         .containsExactly("console:debug", "console:info", "console:warn", "console:error");
 
     // --trace
-    call = () -> new Launcher2().runCommand(new Cmd(), LoggingParameters.OPT_TRACE);
+    call = () -> new Launcher().runCommand(new Cmd(), LoggingParameters.OPT_TRACE);
 
     Assertions.assertThat(captureLogs(Loggers.ROOT, call))
         .containsExactly(
@@ -196,12 +197,14 @@ public class LauncherTest extends TestBase {
   @Test
   public void testCustomLogConfig() throws Throwable {
     @Parameters(commandNames = "cmd")
-    class Cmd extends Command<ExitStatus> {
+    class Cmd extends Command<ExitCodes> {
       @Override
-      public ExitStatus run() {
+      public ExitCodes run() {
+        Loggers.CONSOLE.info("console:before");
         Logger internal = LoggerFactory.getLogger("com.carrotsearch.Internal");
-        internal.info("internal:info");
-        return ExitStatus.SUCCESS;
+        internal.error("internal:info");
+        Loggers.CONSOLE.info("console:after");
+        return ExitCodes.SUCCESS;
       }
 
       @Override
@@ -215,7 +218,170 @@ public class LauncherTest extends TestBase {
       }
     }
 
-    Assertions.assertThat(captureLogs(Loggers.ROOT, () -> new Launcher2().runCommand(new Cmd(), LoggingParameters.OPT_TRACE)))
+    Assertions.assertThat(
+            captureLogs(
+                Loggers.ROOT,
+                () -> new Launcher().runCommand(new Cmd(), LoggingParameters.OPT_TRACE)))
         .containsExactly("console:before", "console:after");
+  }
+
+  @Test
+  public void testSysProperty() throws Throwable {
+    @Parameters(commandNames = "cmd")
+    class Cmd extends Command<ExitCodes> {
+      @Override
+      public ExitCodes run() {
+        Loggers.CONSOLE.info(System.getProperty("sysProp", "--"));
+        return ExitCodes.SUCCESS;
+      }
+    }
+
+    Assertions.assertThat(
+            captureLogs(
+                Loggers.CONSOLE, () -> new Launcher().runCommand(new Cmd(), "-DsysProp=value")))
+        .containsExactly("value");
+  }
+
+  @Test
+  public void testReportCommandException() throws Throwable {
+    @Parameters(commandNames = "cmd")
+    class Cmd extends Command<ExitCodes> {
+      @Override
+      public ExitCodes run() {
+        throw new ReportCommandException("Error message.", ExitCodes.ERROR_UNKNOWN);
+      }
+    }
+
+    Assertions.assertThat(
+            captureLogs(
+                Loggers.CONSOLE,
+                () -> {
+                  Assertions.assertThat(new Launcher().runCommand(new Cmd()))
+                      .isEqualTo(ExitCodes.ERROR_UNKNOWN);
+                }))
+        .containsExactly("Error message.");
+  }
+
+  @Test
+  public void testReportCommandExceptionWithCause() throws Throwable {
+    @Parameters(commandNames = "cmd")
+    class Cmd extends Command<ExitCodes> {
+      @Override
+      public ExitCodes run() {
+        try {
+          throw new Exception("Nested cause");
+        } catch (Exception e) {
+          throw new ReportCommandException("Error message.", ExitCodes.ERROR_UNKNOWN, e);
+        }
+      }
+    }
+
+    List<String> logs =
+        captureLogs(
+            Loggers.CONSOLE,
+            () -> {
+              Assertions.assertThat(
+                      new Launcher().runCommand(new Cmd(), LoggingParameters.OPT_VERBOSE))
+                  .isEqualTo(ExitCodes.ERROR_UNKNOWN);
+            });
+    Assertions.assertThat(String.join("\n", logs))
+        .contains("Error message.")
+        .contains("Nested cause");
+  }
+
+  @Test
+  public void testRunCommands() throws Throwable {
+    @Parameters(commandNames = "cmd1", commandDescription = "Command 1.")
+    class Cmd1 extends Command<ExitCodes> {
+      @Parameter(
+          names = {"--opt1"},
+          required = true)
+      public String opt1;
+
+      @Override
+      public ExitCodes run() {
+        return ExitCodes.SUCCESS;
+      }
+    }
+
+    @Parameters(commandNames = "cmd2", commandDescription = "Command 2.")
+    class Cmd2 extends Command<ExitCodes> {
+      @Parameter(names = {"--opt2"})
+      public String opt2;
+
+      @Override
+      public ExitCodes run() {
+        return ExitCodes.SUCCESS;
+      }
+    }
+
+    @Parameters(commandNames = "cmd3", commandDescription = "Command 3.", hidden = true)
+    class Cmd3 extends Command<ExitCodes> {
+      @Override
+      public ExitCodes run() {
+        return ExitCodes.SUCCESS;
+      }
+    }
+
+    // Empty arg list.
+    logsEqual(
+        "LauncherTest_testRunCommands1.txt",
+        () -> {
+          List<Command<ExitCodes>> commands = Arrays.asList(new Cmd1(), new Cmd2(), new Cmd3());
+          Assertions.assertThat(new Launcher().runCommands("launch", commands))
+              .isEqualTo(ExitCodes.SUCCESS);
+        });
+
+    // Display hidden commands.
+    logsEqual(
+        "LauncherTest_testRunCommands2.txt",
+        () -> {
+          List<Command<ExitCodes>> commands = Arrays.asList(new Cmd1(), new Cmd2(), new Cmd3());
+          Assertions.assertThat(new Launcher().runCommands(commands, LauncherParameters.OPT_HIDDEN))
+              .isEqualTo(ExitCodes.SUCCESS);
+        });
+
+    // Invalid command name.
+    logsEqual(
+        "LauncherTest_testRunCommands3.txt",
+        () -> {
+          List<Command<ExitCodes>> commands = Arrays.asList(new Cmd1(), new Cmd2(), new Cmd3());
+          Assertions.assertThat(new Launcher().runCommands(commands, "foobar"))
+              .isEqualTo(ExitCodes.ERROR_INVALID_ARGUMENTS);
+        });
+
+    // Display commands on --help
+    logsEqual(
+        "LauncherTest_testRunCommands4.txt",
+        () -> {
+          List<Command<ExitCodes>> commands = Arrays.asList(new Cmd1(), new Cmd2(), new Cmd3());
+          Assertions.assertThat(new Launcher().runCommands(commands, LauncherParameters.OPT_HELP))
+              .isEqualTo(ExitCodes.SUCCESS);
+        });
+
+    // Display single command's options on --help.
+    logsEqual(
+        "LauncherTest_testRunCommands5.txt",
+        () -> {
+          List<Command<ExitCodes>> commands = Arrays.asList(new Cmd1(), new Cmd2(), new Cmd3());
+          Assertions.assertThat(
+                  new Launcher()
+                      .runCommands("launch", commands, "cmd1", LauncherParameters.OPT_HELP))
+              .isEqualTo(ExitCodes.SUCCESS);
+        });
+
+    // Missing required option from a command.
+    logsEqual(
+        "LauncherTest_testRunCommands6.txt",
+        () -> {
+          List<Command<ExitCodes>> commands = Arrays.asList(new Cmd1(), new Cmd2(), new Cmd3());
+          Assertions.assertThat(new Launcher().runCommands("launch", commands, "cmd1"))
+              .isEqualTo(ExitCodes.ERROR_INVALID_ARGUMENTS);
+        });
+
+    // Successfull launch.
+    List<Command<ExitCodes>> commands = Collections.singletonList(new Cmd1());
+    Assertions.assertThat(new Launcher().runCommands("launch", commands, "cmd1", "--opt1", "foo"))
+        .isEqualTo(ExitCodes.SUCCESS);
   }
 }

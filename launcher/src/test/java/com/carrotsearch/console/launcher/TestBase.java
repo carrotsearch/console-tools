@@ -18,10 +18,7 @@ import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.slf4j.Logger;
 
 import java.beans.PropertyChangeListener;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +34,17 @@ abstract class TestBase extends RandomizedTest {
             BiConsumer<Logger, LogEventData> evConsumer =
                 (lgr, event) -> {
                   logs.add(event.getMessage());
+                  if (event.getThrowable() != null) {
+                    try {
+                      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                      PrintStream pw = new PrintStream(baos, true, "UTF-8");
+                      event.getThrowable().printStackTrace(pw);
+                      pw.flush();
+                      logs.add(new String(baos.toByteArray(), StandardCharsets.UTF_8));
+                    } catch (UnsupportedEncodingException e) {
+                      throw new RuntimeException(e);
+                    }
+                  }
                 };
             LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
             Configuration configuration = ctx.getConfiguration();

@@ -11,5 +11,5 @@ interface LogEventData {
 
   org.slf4j.event.Level getLevel();
 
-  Throwable getThrown();
+  Throwable getThrowable();
 }

@@ -1,15 +1,15 @@
-Usage: cmd [options]
+Usage: cmd1 [options]
 
   Options:
     --logging-config
        Explicit Log4j2 XML configuration location.
 
+  * --opt1
+
+
     -q, --quiet
        Quiet logging configuration.
        Default: false
-
-  * --requiredArg
-       
 
     -v, --verbose
        Verbose logging configuration.
@@ -19,3 +19,4 @@ Usage: cmd [options]
        Sets a system property to a given value (JVM syntax).
        Syntax: -Dkey=value
        Default: {}
+

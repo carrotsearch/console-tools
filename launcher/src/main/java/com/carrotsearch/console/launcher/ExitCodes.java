@@ -6,21 +6,22 @@
  */
 package com.carrotsearch.console.launcher;
 
-public enum ExitStatus implements ExitCode {
+public enum ExitCodes implements ExitCode {
   /** The command was successful. */
   SUCCESS(0),
 
   /** Unknown error cause. */
-  ERROR_OTHER(1),
+  ERROR_UNKNOWN(1),
 
   /** Invalid input arguments or their combination. */
   ERROR_INVALID_ARGUMENTS(2),
 
+  /** An internal error. */
   ERROR_INTERNAL(3);
 
   private final int code;
 
-  ExitStatus(int systemExitCode) {
+  ExitCodes(int systemExitCode) {
     this.code = systemExitCode;
   }
 

@@ -6,31 +6,28 @@
  */
 package com.carrotsearch.console.launcher;
 
+import java.util.Objects;
+
 /**
- * An exception class that, by default, won't cause the stack traces to be logged to the console.
- * Only exception messages (and their sub-causes) will be logged.
+ * An exception that propagates to the launcher causing an error message to be logged to the
+ * console. Does not print the stack trace.
  */
 @SuppressWarnings("serial")
 public final class ReportCommandException extends RuntimeException {
-  public final ExitStatus exitStatus;
+  public final ExitCode exitCode;
 
-  private ReportCommandException(Throwable t, ExitStatus exitStatus) {
-    super(checkNotNull(t));
-
-    this.exitStatus = exitStatus;
+  public ReportCommandException(ExitCode exitCode) {
+    super();
+    this.exitCode = exitCode;
   }
 
-  private static Throwable checkNotNull(Throwable t) {
-    if (t == null) throw new IllegalArgumentException("Cause cannot be null.");
-    return t;
+  public ReportCommandException(String message, ExitCode exitCode) {
+    super(Objects.requireNonNull(message));
+    this.exitCode = exitCode;
   }
 
-  /**
-   * Throws {@link ReportCommandException} wrapper.
-   *
-   * @return Returns fake {@link RuntimeException} to make the compiler happy.
-   */
-  public static RuntimeException causedBy(Throwable t, ExitStatus s) throws ReportCommandException {
-    throw new ReportCommandException(t, s);
+  public ReportCommandException(String message, ExitCode exitCode, Throwable cause) {
+    super(Objects.requireNonNull(message), Objects.requireNonNull(cause));
+    this.exitCode = exitCode;
   }
 }

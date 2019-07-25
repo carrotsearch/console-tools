@@ -53,7 +53,7 @@ public class LogMonitorAppender extends AbstractAppender {
         logger,
         new LogEventData() {
           @Override
-          public Throwable getThrown() {
+          public Throwable getThrowable() {
             return event.getThrown();
           }
 

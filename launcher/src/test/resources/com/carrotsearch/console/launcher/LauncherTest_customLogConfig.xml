@@ -2,8 +2,7 @@
 
 <Configuration>
   <Loggers>
-    <Logger level="INFO" name="com.carrotsearch">
-    </Logger>
-    <foo>
+    <!-- Disable entirely. -->
+    <Logger name="com.carrotsearch" additivity="false" />
   </Loggers>
 </Configuration>
