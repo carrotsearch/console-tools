@@ -7,6 +7,13 @@
 package com.carrotsearch.console.launcher;
 
 import com.carrotsearch.randomizedtesting.RandomizedTest;
+import java.beans.PropertyChangeListener;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.BiConsumer;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -16,14 +23,6 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.slf4j.Logger;
-
-import java.beans.PropertyChangeListener;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.BiConsumer;
 
 abstract class TestBase extends RandomizedTest {
   public static List<String> captureLogs(Logger logger, ThrowingCallable c) throws Throwable {

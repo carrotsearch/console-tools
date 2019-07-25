@@ -8,12 +8,6 @@ package com.carrotsearch.console.launcher;
 
 import com.carrotsearch.console.jcommander.Parameter;
 import com.carrotsearch.console.jcommander.Parameters;
-import org.assertj.core.api.Assertions;
-import org.assertj.core.api.ThrowableAssert;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -21,6 +15,11 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.ThrowableAssert;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LauncherTest extends TestBase {
   @Test

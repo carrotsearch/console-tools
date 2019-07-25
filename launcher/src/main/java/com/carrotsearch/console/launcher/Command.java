@@ -16,8 +16,7 @@ public abstract class Command<T extends ExitCode> {
 
   @ParametersDelegate public LoggingParameters logging = new LoggingParameters();
 
-  @ParametersDelegate
-  protected SysPropertiesParameters sysProps = new SysPropertiesParameters();
+  @ParametersDelegate protected SysPropertiesParameters sysProps = new SysPropertiesParameters();
 
   @Parameter(
       hidden = true,

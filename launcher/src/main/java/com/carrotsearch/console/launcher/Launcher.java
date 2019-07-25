@@ -8,6 +8,8 @@ package com.carrotsearch.console.launcher;
 
 import com.carrotsearch.console.jcommander.JCommander;
 import com.carrotsearch.console.jcommander.ParameterException;
+import com.carrotsearch.console.jcommander.Parameters;
+import com.carrotsearch.console.jcommander.UsageOptions;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -18,9 +20,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.stream.Collectors;
-
-import com.carrotsearch.console.jcommander.Parameters;
-import com.carrotsearch.console.jcommander.UsageOptions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.AbstractConfiguration;
