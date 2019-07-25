@@ -12,7 +12,7 @@ apply from: file('gradle/buildinfo.gradle')
 
 apply plugin: 'base'
 
-def currentVersion = '1.0.4-SNAPSHOT'
+def currentVersion = '1.0.0'
 
 ext {
   gitRev = gitStatus.id
@@ -32,7 +32,7 @@ ext {
 allprojects {
   apply plugin: 'idea'
 
-  group "com.carrotsearch"
+  group "com.carrotsearch.console"
   version = currentVersion
 
   repositories {
