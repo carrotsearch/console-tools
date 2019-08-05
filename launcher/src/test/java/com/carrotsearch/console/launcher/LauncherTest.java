@@ -383,4 +383,32 @@ public class LauncherTest extends TestBase {
     Assertions.assertThat(new Launcher().runCommands("launch", commands, "cmd1", "--opt1", "foo"))
         .isEqualTo(ExitCodes.SUCCESS);
   }
+
+  @Test
+  public void testJCommanderCustomisation() throws Throwable {
+    @Parameters(commandNames = "cmd")
+    class Cmd extends Command<ExitCodes> {
+      @Parameter(
+          names = {"--uri"},
+          required = true)
+      public URI uri;
+
+      @Override
+      public ExitCodes run() {
+        Loggers.CONSOLE.info("URI: " + uri);
+        return ExitCodes.SUCCESS;
+      }
+    }
+
+    String testUri = "http://localhost/foo";
+    List<String> logs =
+        captureLogs(
+            Loggers.CONSOLE,
+            () -> {
+              Assertions.assertThat(new Launcher().runCommand(new Cmd(), "--uri", testUri))
+                  .isEqualTo(ExitCodes.SUCCESS);
+            });
+
+    Assertions.assertThat(String.join("\n", logs)).contains("URI: " + testUri);
+  }
 }

@@ -6,6 +6,7 @@
  */
 package com.carrotsearch.console.launcher;
 
+import com.carrotsearch.console.jcommander.JCommander;
 import com.carrotsearch.console.jcommander.Parameter;
 import com.carrotsearch.console.jcommander.ParametersDelegate;
 import java.net.URI;
@@ -29,5 +30,9 @@ public abstract class Command<T extends ExitCode> {
 
   protected List<URI> configureLogging(List<URI> defaults) {
     return defaults;
+  }
+
+  protected void configure(JCommander jcommander) {
+    // Do nothing by default.
   }
 }

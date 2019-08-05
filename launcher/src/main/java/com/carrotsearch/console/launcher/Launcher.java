@@ -15,11 +15,15 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.AbstractConfiguration;
@@ -29,6 +33,8 @@ import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
 
 public class Launcher {
+  public static final String ENV_SCRIPT_NAME = "SCRIPT_NAME";
+
   public ExitCode runCommands(
       Collection<? extends Command<? extends ExitCode>> cmds, String... args) {
     return runCommands("", cmds, args);
@@ -48,10 +54,13 @@ public class Launcher {
 
       LauncherParameters launcherParameters = new LauncherParameters();
       JCommander jc = new JCommander(launcherParameters);
+      jc.addConverterFactory(new PathConverter());
+      jc.addConverterFactory(new UriConverter());
+
+      cmds.forEach(cmd -> cmd.configure(jc));
       cmds.forEach(jc::addCommand);
 
       jc.setProgramName(launchScriptName, "");
-      jc.addConverterFactory(new PathConverter());
       jc.parse(args);
 
       String cmd = jc.getParsedCommand();
@@ -94,6 +103,10 @@ public class Launcher {
 
       jc.setProgramName(cmdName, "");
       jc.addConverterFactory(new PathConverter());
+      jc.addConverterFactory(new UriConverter());
+
+      cmd.configure(jc);
+
       jc.parse(args);
 
       return launchCommand(jc, cmd);
@@ -133,7 +146,16 @@ public class Launcher {
     if (cmds.size() == 1) {
       exitCode = new Launcher().runCommand(cmds.iterator().next(), args);
     } else {
-      exitCode = new Launcher().runCommands(cmds, args);
+      String scriptName =
+          Stream.of(
+                  AccessController.doPrivileged(
+                      (PrivilegedAction<String>) () -> System.getenv(ENV_SCRIPT_NAME)),
+                  "")
+              .filter(Objects::nonNull)
+              .findFirst()
+              .get();
+
+      exitCode = new Launcher().runCommands(scriptName, cmds, args);
     }
     Runtime.getRuntime().exit(exitCode.processReturnValue());
   }
