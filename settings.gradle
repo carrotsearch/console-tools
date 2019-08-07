@@ -1,5 +1,6 @@
 
 include 'launcher'
 include 'formatters'
+include 'testing'
 
 rootProject.name = 'console-tools'

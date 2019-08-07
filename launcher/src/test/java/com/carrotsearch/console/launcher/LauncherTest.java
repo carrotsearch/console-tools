@@ -8,6 +8,8 @@ package com.carrotsearch.console.launcher;
 
 import com.carrotsearch.console.jcommander.Parameter;
 import com.carrotsearch.console.jcommander.Parameters;
+import com.carrotsearch.console.testing.Logs;
+import com.carrotsearch.console.testing.ThrowingCallable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -16,7 +18,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.assertj.core.api.Assertions;
-import org.assertj.core.api.ThrowableAssert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,36 +147,36 @@ public class LauncherTest extends TestBase {
       }
     }
 
-    ThrowableAssert.ThrowingCallable call;
+    ThrowingCallable call;
 
     // Default level.
     call = () -> new Launcher().runCommand(new Cmd());
 
-    Assertions.assertThat(captureLogs(Loggers.ROOT, call))
+    Assertions.assertThat(Logs.captureAsStrings(Loggers.ROOT, call))
         .containsExactly("internal:warn", "internal:error");
-    Assertions.assertThat(captureLogs(Loggers.CONSOLE, call))
+    Assertions.assertThat(Logs.captureAsStrings(Loggers.CONSOLE, call))
         .containsExactly("console:info", "console:warn", "console:error");
 
     // --quiet
     call = () -> new Launcher().runCommand(new Cmd(), LoggingParameters.OPT_QUIET);
 
-    Assertions.assertThat(captureLogs(Loggers.ROOT, call))
+    Assertions.assertThat(Logs.captureAsStrings(Loggers.ROOT, call))
         .containsExactly("internal:warn", "internal:error");
-    Assertions.assertThat(captureLogs(Loggers.CONSOLE, call))
+    Assertions.assertThat(Logs.captureAsStrings(Loggers.CONSOLE, call))
         .containsExactly("console:warn", "console:error");
 
     // --verbose
     call = () -> new Launcher().runCommand(new Cmd(), LoggingParameters.OPT_VERBOSE);
 
-    Assertions.assertThat(captureLogs(Loggers.ROOT, call))
+    Assertions.assertThat(Logs.captureAsStrings(Loggers.ROOT, call))
         .containsExactly("internal:warn", "internal:error");
-    Assertions.assertThat(captureLogs(Loggers.CONSOLE, call))
+    Assertions.assertThat(Logs.captureAsStrings(Loggers.CONSOLE, call))
         .containsExactly("console:debug", "console:info", "console:warn", "console:error");
 
     // --trace
     call = () -> new Launcher().runCommand(new Cmd(), LoggingParameters.OPT_TRACE);
 
-    Assertions.assertThat(captureLogs(Loggers.ROOT, call))
+    Assertions.assertThat(Logs.captureAsStrings(Loggers.ROOT, call))
         .containsExactly(
             "console:trace",
             "console:debug",
@@ -188,7 +189,7 @@ public class LauncherTest extends TestBase {
             "internal:warn",
             "internal:error");
 
-    Assertions.assertThat(captureLogs(Loggers.CONSOLE, call))
+    Assertions.assertThat(Logs.captureAsStrings(Loggers.CONSOLE, call))
         .containsExactly(
             "console:trace", "console:debug", "console:info", "console:warn", "console:error");
   }
@@ -218,7 +219,7 @@ public class LauncherTest extends TestBase {
     }
 
     Assertions.assertThat(
-            captureLogs(
+            Logs.captureAsStrings(
                 Loggers.ROOT,
                 () -> new Launcher().runCommand(new Cmd(), LoggingParameters.OPT_TRACE)))
         .containsExactly("console:before", "console:after");
@@ -236,7 +237,7 @@ public class LauncherTest extends TestBase {
     }
 
     Assertions.assertThat(
-            captureLogs(
+            Logs.captureAsStrings(
                 Loggers.CONSOLE, () -> new Launcher().runCommand(new Cmd(), "-DsysProp=value")))
         .containsExactly("value");
   }
@@ -252,7 +253,7 @@ public class LauncherTest extends TestBase {
     }
 
     Assertions.assertThat(
-            captureLogs(
+            Logs.captureAsStrings(
                 Loggers.CONSOLE,
                 () -> {
                   Assertions.assertThat(new Launcher().runCommand(new Cmd()))
@@ -276,7 +277,7 @@ public class LauncherTest extends TestBase {
     }
 
     List<String> logs =
-        captureLogs(
+        Logs.captureAsStrings(
             Loggers.CONSOLE,
             () -> {
               Assertions.assertThat(
@@ -402,7 +403,7 @@ public class LauncherTest extends TestBase {
 
     String testUri = "http://localhost/foo";
     List<String> logs =
-        captureLogs(
+        Logs.captureAsStrings(
             Loggers.CONSOLE,
             () -> {
               Assertions.assertThat(new Launcher().runCommand(new Cmd(), "--uri", testUri))

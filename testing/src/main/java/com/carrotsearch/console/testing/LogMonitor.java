@@ -4,14 +4,14 @@
  * Copyright (C) 2019, Carrot Search s.c.
  * All rights reserved.
  */
-package com.carrotsearch.console.launcher;
+package com.carrotsearch.console.testing;
 
 import java.io.Closeable;
 import java.io.IOException;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 
-public final class LogMonitor implements Closeable {
+final class LogMonitor implements Closeable {
   private LogMonitorAppender appender;
   private LoggerContext ctx;
   private LoggerConfig config;
@@ -26,7 +26,6 @@ public final class LogMonitor implements Closeable {
   public synchronized void close() throws IOException {
     if (appender != null) {
       try {
-        System.out.println("!# removing " + this);
         config.removeAppender(appender.getName());
         appender.stop();
         ctx.updateLoggers();

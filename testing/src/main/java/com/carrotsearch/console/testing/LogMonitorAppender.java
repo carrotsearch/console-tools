@@ -4,7 +4,7 @@
  * Copyright (C) 2019, Carrot Search s.c.
  * All rights reserved.
  */
-package com.carrotsearch.console.launcher;
+package com.carrotsearch.console.testing;
 
 import java.util.IdentityHashMap;
 import java.util.Objects;
@@ -21,7 +21,7 @@ import org.slf4j.Logger;
     category = "Core",
     elementType = "appender",
     printObject = false)
-public class LogMonitorAppender extends AbstractAppender {
+public final class LogMonitorAppender extends AbstractAppender {
   private static final IdentityHashMap<Level, org.slf4j.event.Level> levelMap;
 
   static {
@@ -38,10 +38,10 @@ public class LogMonitorAppender extends AbstractAppender {
     levelMap.put(Level.OFF, org.slf4j.event.Level.TRACE);
   }
 
-  private final BiConsumer<Logger, LogEventData> logEventConsumer;
+  private final BiConsumer<Logger, CapturedLogEvent> logEventConsumer;
   private final Logger logger;
 
-  public LogMonitorAppender(Logger logger, BiConsumer<Logger, LogEventData> logEventConsumer) {
+  public LogMonitorAppender(Logger logger, BiConsumer<Logger, CapturedLogEvent> logEventConsumer) {
     super("LogMonitorAppender", null, null, false, Property.EMPTY_ARRAY);
     this.logEventConsumer = logEventConsumer;
     this.logger = logger;
@@ -51,21 +51,9 @@ public class LogMonitorAppender extends AbstractAppender {
   public synchronized void append(LogEvent event) {
     logEventConsumer.accept(
         logger,
-        new LogEventData() {
-          @Override
-          public Throwable getThrowable() {
-            return event.getThrown();
-          }
-
-          @Override
-          public String getMessage() {
-            return event.getMessage().getFormattedMessage();
-          }
-
-          @Override
-          public org.slf4j.event.Level getLevel() {
-            return Objects.requireNonNull(levelMap.get(event.getLevel()));
-          }
-        });
+        new CapturedLogEvent(
+            event.getMessage().getFormattedMessage(),
+            Objects.requireNonNull(levelMap.get(event.getLevel())),
+            event.getThrown()));
   }
 }
