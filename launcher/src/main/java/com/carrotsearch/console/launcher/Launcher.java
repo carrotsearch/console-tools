@@ -167,7 +167,10 @@ public class Launcher {
     } else {
       try {
         configureSysProps(cmd.sysProps);
-        reloadLoggingConfiguration(cmd.configureLogging(resolveLoggingConfigurations(cmd.logging)));
+        List<URI> configurations = cmd.configureLogging(resolveLoggingConfigurations(cmd.logging));
+        if (!cmd.logging.skip) {
+          reloadLoggingConfiguration(configurations);
+        }
         return cmd.run();
       } catch (ReportCommandException e) {
         String msg = e.getMessage();
@@ -238,6 +241,7 @@ public class Launcher {
     if (logging.trace) configs.add(LoggingParameters.OPT_TRACE);
     if (logging.verbose) configs.add(LoggingParameters.OPT_VERBOSE);
     if (logging.quiet) configs.add(LoggingParameters.OPT_QUIET);
+    if (logging.skip) configs.add(LoggingParameters.OPT_SKIP);
     if (configs.size() > 1) {
       throw new ParameterException(
           "Conflicting logging configuration options: " + String.join(", ", configs));

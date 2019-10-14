@@ -17,7 +17,7 @@ public abstract class Command<T extends ExitCode> {
 
   @ParametersDelegate public LoggingParameters logging = new LoggingParameters();
 
-  @ParametersDelegate protected SysPropertiesParameters sysProps = new SysPropertiesParameters();
+  @ParametersDelegate public SysPropertiesParameters sysProps = new SysPropertiesParameters();
 
   @Parameter(
       hidden = true,
@@ -26,7 +26,7 @@ public abstract class Command<T extends ExitCode> {
       help = true)
   public boolean help;
 
-  public abstract T run();
+  protected abstract T run();
 
   protected List<URI> configureLogging(List<URI> defaults) {
     return defaults;

@@ -13,6 +13,8 @@ public class LoggingParameters {
   public static final String OPT_QUIET = "--quiet";
   public static final String OPT_VERBOSE = "--verbose";
   public static final String OPT_TRACE = "--trace";
+
+  public static final String OPT_SKIP = "--logging-skip";
   public static final String OPT_LOGGING_CONFIG = "--logging-config";
 
   @Parameter(
@@ -30,6 +32,12 @@ public class LoggingParameters {
       names = {OPT_TRACE},
       description = "Very verbose logging.")
   public boolean trace;
+
+  @Parameter(
+      hidden = true,
+      names = {OPT_SKIP},
+      description = "Skip logging system configuration.")
+  public boolean skip;
 
   @Parameter(
       required = false,
