@@ -130,7 +130,8 @@ public class JCommander {
 
   static {
     CONVERTER_FACTORIES.addFirst(new DefaultConverterFactory());
-  };
+  }
+  ;
 
   /** Creates a new un-configured JCommander object. */
   public JCommander() {}

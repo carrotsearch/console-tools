@@ -1,5 +1,5 @@
 com.carrotsearch.randomizedtesting:*=2.7.3
 org.assertj:*=3.12.2
 org.slf4j:*=1.7.26
-org.apache.logging.log4j:*=2.15.0
+org.apache.logging.log4j:*=2.16.0
 com.carrotsearch.progresso:*=1.7.4
