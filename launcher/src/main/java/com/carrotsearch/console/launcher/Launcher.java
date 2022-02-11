@@ -82,7 +82,7 @@ public class Launcher {
       Loggers.CONSOLE.error(
           "Invalid arguments (type {} for help): {}", Command.OPT_HELP, e.getMessage());
       return ExitCodes.ERROR_INVALID_ARGUMENTS;
-    } catch (Exception e) {
+    } catch (Throwable e) {
       Loggers.CONSOLE.error(
           "An unhandled exception occurred while launching commands (use {} to display stack trace): {}",
           LoggingParameters.OPT_VERBOSE,
