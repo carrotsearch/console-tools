@@ -10,7 +10,7 @@ apply from: file('gradle/buildinfo.gradle')
 
 apply plugin: 'base'
 
-def currentVersion = '1.0.8'
+def currentVersion = '1.0.9-SNAPSHOT'
 
 ext {
   gitRev = gitStatus.id
