@@ -136,7 +136,9 @@ public class JCommander {
   /** Creates a new un-configured JCommander object. */
   public JCommander() {}
 
-  /** @param object The arg object expected to contain {@link Parameter} annotations. */
+  /**
+   * @param object The arg object expected to contain {@link Parameter} annotations.
+   */
   public JCommander(Object object) {
     addObject(object);
     createDescriptions();
@@ -781,7 +783,9 @@ public class JCommander {
   private boolean m_caseSensitiveOptions = true;
   private boolean m_allowAbbreviatedOptions = false;
 
-  /** @return the number of options that were processed. */
+  /**
+   * @return the number of options that were processed.
+   */
   private int processVariableArity(String[] args, int index, ParameterDescription pd) {
     Object arg = pd.getObject();
     IVariableArity va;
@@ -936,7 +940,9 @@ public class JCommander {
     jc.usage(out, indent);
   }
 
-  /** @return the description of the command. */
+  /**
+   * @return the description of the command.
+   */
   public String getCommandDescription(String commandName) {
     JCommander jc = findCommandByAlias(commandName);
     if (jc == null) {
@@ -964,7 +970,9 @@ public class JCommander {
     return result;
   }
 
-  /** @return The internationalized version of the string if available, otherwise return def. */
+  /**
+   * @return The internationalized version of the string if available, otherwise return def.
+   */
   private String getI18nString(ResourceBundle bundle, String key, String def) {
     String s = bundle != null ? bundle.getString(key) : null;
     return s != null ? s : def;
@@ -1186,7 +1194,9 @@ public class JCommander {
     return new ArrayList<ParameterDescription>(m_fields.values());
   }
 
-  /** @return the main parameter description or null if none is defined. */
+  /**
+   * @return the main parameter description or null if none is defined.
+   */
   public ParameterDescription getMainParameter() {
     return m_mainParameterDescription;
   }
@@ -1444,7 +1454,9 @@ public class JCommander {
     return m_parsedAlias;
   }
 
-  /** @return n spaces */
+  /**
+   * @return n spaces
+   */
   private String s(int count) {
     StringBuilder result = new StringBuilder();
     for (int i = 0; i < count; i++) {
@@ -1454,7 +1466,9 @@ public class JCommander {
     return result.toString();
   }
 
-  /** @return the objects that JCommander will fill with the result of parsing the command line. */
+  /**
+   * @return the objects that JCommander will fill with the result of parsing the command line.
+   */
   public List<Object> getObjects() {
     return m_objects;
   }

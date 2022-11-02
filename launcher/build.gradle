@@ -7,7 +7,7 @@ dependencies {
     api "com.carrotsearch.progresso:progresso-consolewidth-unixish"
 
     api "org.apache.logging.log4j:log4j-core"
-    api "org.apache.logging.log4j:log4j-slf4j18-impl"
+    api "org.apache.logging.log4j:log4j-slf4j2-impl"
 
     testImplementation "com.carrotsearch.randomizedtesting:randomizedtesting-runner"
     testImplementation "org.assertj:assertj-core"

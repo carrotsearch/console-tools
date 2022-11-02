@@ -18,6 +18,8 @@ package com.carrotsearch.console.jcommander;
  * @author cbeust
  */
 public interface IStringConverter<T> {
-  /** @return an object of type <T> created from the parameter value. */
+  /**
+   * @return an object of type <T> created from the parameter value.
+   */
   T convert(String value);
 }

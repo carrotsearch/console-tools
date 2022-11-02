@@ -214,7 +214,9 @@ public class Parameterized {
     return m_wrappedParameter.getParameter();
   }
 
-  /** @return the generic type of the collection for this field, or null if not applicable. */
+  /**
+   * @return the generic type of the collection for this field, or null if not applicable.
+   */
   public Type findFieldGenericType() {
     if (m_method != null) {
       return null;

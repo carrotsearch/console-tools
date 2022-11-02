@@ -210,7 +210,9 @@ public class ParameterDescription {
     addValue(value, false /* not default */);
   }
 
-  /** @return true if this parameter received a value during the parsing phase. */
+  /**
+   * @return true if this parameter received a value during the parsing phase.
+   */
   public boolean isAssigned() {
     return m_assigned;
   }
