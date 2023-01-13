@@ -35,6 +35,16 @@ import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
 public class Launcher {
   public static final String ENV_SCRIPT_NAME = "SCRIPT_NAME";
 
+  public final boolean configureLoggingDefaults;
+
+  public Launcher() {
+    this(true);
+  }
+
+  public Launcher(boolean configureLoggingDefaults) {
+    this.configureLoggingDefaults = configureLoggingDefaults;
+  }
+
   public ExitCode runCommands(
       Collection<? extends Command<? extends ExitCode>> cmds, String... args) {
     return runCommands("", cmds, args);
@@ -276,12 +286,16 @@ public class Launcher {
   }
 
   private void configureLoggingDefaults() {
-    try {
-      Configurator.initialize(
-          "log4j2-init.xml", Launcher.class.getClassLoader(), getResourceAsURI("log4j2-init.xml"));
-    } catch (RuntimeException | Error e) {
-      throw new RuntimeException(
-          "Could not load or initialize the default logging configuration.", e);
+    if (configureLoggingDefaults) {
+      try {
+        Configurator.initialize(
+            "log4j2-init.xml",
+            Launcher.class.getClassLoader(),
+            getResourceAsURI("log4j2-init.xml"));
+      } catch (RuntimeException | Error e) {
+        throw new RuntimeException(
+            "Could not load or initialize the default logging configuration.", e);
+      }
     }
   }
 
