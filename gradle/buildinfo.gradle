@@ -5,4 +5,3 @@ import java.time.temporal.*
 def now = ZonedDateTime.now().withFixedOffsetZone()
 ext.buildDate = now.toString()
 ext.buildDateTrimmed = now.truncatedTo(ChronoUnit.HOURS)
-

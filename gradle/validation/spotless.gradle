@@ -45,6 +45,9 @@ configure(rootProject) { prj ->
     groovyGradle {
       target '*.gradle', 'gradle/**/*.gradle'
 
+      lineEndings 'UNIX'
+      endWithNewline()
+
       greclipse(deps.versions.greclipse.get()).configFile rootProject.files(
           'gradle/validation/spotless/spotless.eclipseformat.xml',
           'gradle/validation/spotless/spotless.groovyformat.prefs')
