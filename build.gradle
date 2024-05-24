@@ -1,12 +1,18 @@
 
 plugins {
-  id 'com.diffplug.spotless' version "6.6.0" apply false
-  id "com.palantir.consistent-versions" version "2.11.0"
+  alias(deps.plugins.spotless) apply false
+  alias(deps.plugins.dependencychecks)
+  alias(deps.plugins.benmanes.versions)
+  alias(deps.plugins.forbiddenapis) apply false
+  alias(deps.plugins.randomizedtesting.plugin) apply false
+  alias(deps.plugins.versionCatalogUpdate) apply false
 }
 
+apply from: file('gradle/dependencies.gradle')
 apply from: file('gradle/min-gradle-version.gradle')
 apply from: file('gradle/gitinfo.gradle')
 apply from: file('gradle/buildinfo.gradle')
+apply from: file('gradle/validation/spotless.gradle')
 
 apply plugin: 'base'
 
@@ -49,18 +55,12 @@ allprojects {
 subprojects {
   apply plugin: 'java-library'
   apply plugin: 'idea'
-  apply plugin: 'com.diffplug.spotless'
 
-  sourceCompatibility = 11
-  targetCompatibility = 11
+  def minJavaVersion = JavaVersion.toVersion(deps.versions.minJava.get())
 
-  spotless {
-    java {
-      licenseHeaderFile licenseHeader
-      lineEndings 'UNIX'
-      endWithNewline()
-      googleJavaFormat('1.15.0')
-    }
+  java {
+    sourceCompatibility = minJavaVersion
+    targetCompatibility = minJavaVersion
   }
 
   test {
@@ -76,7 +76,7 @@ subprojects {
   tasks.withType(Jar) {
     manifest {
       attributes("Implementation-Title": project.name,
-                 "Implementation-Version": "${project.version} (${gitRev}, ${buildDateTrimmed})")
+      "Implementation-Version": "${project.version} (${gitRev}, ${buildDateTrimmed})")
     }
   }
 
@@ -92,9 +92,6 @@ subprojects {
   }
 
   afterEvaluate {
-    check.dependsOn(spotlessCheck)
-    precommit.dependsOn(spotlessCheck)
-
     tasks.withType(AbstractArchiveTask) {
       duplicatesStrategy = 'fail'
     }
@@ -133,12 +130,12 @@ subprojects {
         name = 'sonatype'
         url "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2"
         credentials {
-            if (project.hasProperty('nexusUsername')) {
-              username project.nexusUsername
-            }
-            if (project.hasProperty('nexusPassword')) {
-              password project.nexusPassword
-            }
+          if (project.hasProperty('nexusUsername')) {
+            username project.nexusUsername
+          }
+          if (project.hasProperty('nexusPassword')) {
+            password project.nexusPassword
+          }
         }
       }
     }
@@ -147,7 +144,7 @@ subprojects {
       maven(MavenPublication) {
         afterEvaluate {
           from components.java
-          artifactId = project.archivesBaseName
+          artifactId = project.base.archivesName
 
           artifact sourcesJar
           artifact javadocJar

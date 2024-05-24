@@ -1,17 +1,19 @@
 
 dependencies {
-    api "org.slf4j:slf4j-api"
-    api "com.carrotsearch.progresso:progresso"
+    api deps.slf4j.api
 
-    api "com.carrotsearch.progresso:progresso-log4j2"
-    api "com.carrotsearch.progresso:progresso-consolewidth-unixish"
+    api deps.progresso.core
+    api deps.progresso.log4j2
+    api deps.progresso.consolewidth.unixish
 
-    api "org.apache.logging.log4j:log4j-core"
-    api "org.apache.logging.log4j:log4j-slf4j2-impl"
+    api deps.log4j.core
+    api deps.log4j.slf4j2
 
-    testImplementation "com.carrotsearch.randomizedtesting:randomizedtesting-runner"
-    testImplementation "org.assertj:assertj-core"
     testImplementation project(":testing")
+    testImplementation deps.randomizedtesting.runner
+    testImplementation deps.assertj
+
+    annotationProcessor deps.log4j.core
 }
 
 javadoc {

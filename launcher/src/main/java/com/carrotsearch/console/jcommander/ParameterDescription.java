@@ -32,6 +32,7 @@ public class ParameterDescription {
 
   /** The field/method */
   private Parameterized m_parameterized;
+
   /** Keep track of whether a value was added to flag an error */
   private boolean m_assigned = false;
 
@@ -39,6 +40,7 @@ public class ParameterDescription {
   private String m_description;
   private JCommander m_jCommander;
   private Object m_default;
+
   /** Longest of the names(), used to present usage() alphabetically */
   private String m_longestName = "";
 

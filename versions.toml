@@ -1,0 +1,31 @@
+[versions]
+progresso = "1.8.2"
+log4j = { strictly = "2.23.1" }
+slf4j = "2.0.3"
+randomizedtesting = "2.8.1"
+# @keep This is the minimum required Java version.
+minJava = "11"
+# @keep This is GJF version for spotless/ tidy.
+googleJavaFormat = "1.22.0"
+# @keep spotless formatting of groovy/gradle files
+greclipse = "4.26"
+
+[libraries]
+assertj = { module = "org.assertj:assertj-core", version = { strictly = "3.21.0" } }
+progresso-core = { module = "com.carrotsearch.progresso:progresso", version.ref = "progresso" }
+progresso-log4j2 = { module = "com.carrotsearch.progresso:progresso-log4j2", version.ref = "progresso" }
+progresso-consolewidth-unixish = { module = "com.carrotsearch.progresso:progresso-consolewidth-unixish", version.ref = "progresso" }
+junit = { module = "junit:junit", version = { strictly = "4.13.2" } }
+log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
+log4j-slf4j2 = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
+randomizedtesting-runner = { module = "com.carrotsearch.randomizedtesting:randomizedtesting-runner", version.ref = "randomizedtesting" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+
+[plugins]
+benmanes-versions = "com.github.ben-manes.versions:0.51.0"
+dependencychecks = "com.carrotsearch.gradle.dependencychecks:0.0.9"
+forbiddenapis = "de.thetaphi.forbiddenapis:3.7"
+node-gradle = "com.github.node-gradle.node:7.0.2"
+randomizedtesting-plugin = "com.carrotsearch.gradle.randomizedtesting:0.0.6"
+spotless = "com.diffplug.spotless:6.25.0"
+versionCatalogUpdate = "nl.littlerobots.version-catalog-update:0.8.4"

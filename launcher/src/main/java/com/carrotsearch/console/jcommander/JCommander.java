@@ -1336,7 +1336,9 @@ public class JCommander {
       String value,
       IStringConverter<?> converter,
       Class<? extends IParameterSplitter> splitterClass)
-      throws InstantiationException, IllegalAccessException, InvocationTargetException,
+      throws InstantiationException,
+          IllegalAccessException,
+          InvocationTargetException,
           NoSuchMethodException {
     IParameterSplitter splitter = splitterClass.getConstructor().newInstance();
     List<Object> result = new ArrayList();
@@ -1348,7 +1350,9 @@ public class JCommander {
 
   private IStringConverter<?> instantiateConverter(
       String optionName, Class<? extends IStringConverter<?>> converterClass)
-      throws IllegalArgumentException, InstantiationException, IllegalAccessException,
+      throws IllegalArgumentException,
+          InstantiationException,
+          IllegalAccessException,
           InvocationTargetException {
     Constructor<IStringConverter<?>> ctor = null;
     Constructor<IStringConverter<?>> stringCtor = null;
