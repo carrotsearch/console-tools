@@ -1,7 +1,6 @@
 
 dependencies {
-    api deps.slf4j.api
-
-    api deps.log4j.core
-    api deps.log4j.slf4j2
+  api libs.slf4j.api
+  api libs.log4j.core
+  api libs.log4j.slf4j2
 }

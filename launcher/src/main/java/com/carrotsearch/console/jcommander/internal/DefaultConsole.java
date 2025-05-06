@@ -1,16 +1,12 @@
-/*
- * console-tools
- *
- * Copyright (C) 2019, Carrot Search s.c.
- * All rights reserved.
- */
 package com.carrotsearch.console.jcommander.internal;
 
 import com.carrotsearch.console.jcommander.ParameterException;
+import com.carrotsearch.progresso.annotations.SuppressForbidden;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+@SuppressForbidden("sysout allowed.")
 public class DefaultConsole implements Console {
   public void print(String msg) {
     System.out.print(msg);

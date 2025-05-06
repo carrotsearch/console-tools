@@ -1,42 +1,18 @@
 
 plugins {
-  alias(deps.plugins.spotless) apply false
-  alias(deps.plugins.dependencychecks)
-  alias(deps.plugins.benmanes.versions)
-  alias(deps.plugins.forbiddenapis) apply false
-  alias(deps.plugins.randomizedtesting.plugin) apply false
-  alias(deps.plugins.versionCatalogUpdate) apply false
+  alias(libs.plugins.buildinfra)
 }
 
 apply from: file('gradle/dependencies.gradle')
-apply from: file('gradle/min-gradle-version.gradle')
-apply from: file('gradle/gitinfo.gradle')
-apply from: file('gradle/buildinfo.gradle')
-apply from: file('gradle/validation/spotless.gradle')
 apply from: file('gradle/publishing/maven.gradle')
 
 apply plugin: 'base'
-
-ext {
-  gitRev = gitStatus.id
-
-  licenseHeader = file('etc/license-header.txt')
-
-  replaceTokens = [
-    'version': deps.versions.consoletools.get(),
-    'gitRev': gitRev,
-    'buildDate': buildDate,
-    'buildDateTrimmed': buildDateTrimmed
-  ]
-
-  isIdea = System.getProperty("idea.active") != null || gradle.startParameter.taskNames.contains('idea') || gradle.startParameter.taskNames.contains('cleanIdea')
-}
 
 allprojects {
   apply plugin: 'idea'
 
   group "com.carrotsearch.console"
-  version = deps.versions.consoletools.get()
+  version = libs.versions.consoletools.get()
 
   repositories {
     mavenCentral()
@@ -55,49 +31,24 @@ subprojects {
   apply plugin: 'java-library'
   apply plugin: 'idea'
 
-  def minJavaVersion = JavaVersion.toVersion(deps.versions.minJava.get())
-
-  java {
-    sourceCompatibility = minJavaVersion
-    targetCompatibility = minJavaVersion
-  }
-
-  test {
-    maxParallelForks = (int) Math.max(Runtime.runtime.availableProcessors() / 2.0, 4.0)
-  }
-
   tasks.withType(JavaCompile) {
-    // << "-Xlint:unchecked"
     options.compilerArgs << "-Xlint:deprecation"
     options.encoding = "UTF-8"
   }
 
   tasks.withType(Jar) {
     manifest {
-      attributes("Implementation-Title": project.name,
-      "Implementation-Version": "${project.version} (${gitRev}, ${buildDateTrimmed})")
+      attributes(
+          "Implementation-Title": project.name,
+          "Implementation-Version": project.version)
     }
   }
 
   javadoc {
     title = "${project.name} ${project.version} API Documentation"
 
-    if (JavaVersion.current().isJava9Compatible()) {
-      options.addBooleanOption('html5', true)
-      options.addStringOption('Xdoclint:all,-missing', '-noindex')
-    }
-
+    options.addBooleanOption('html5', true)
+    options.addStringOption('Xdoclint:all,-missing', '-noindex')
     options.encoding = 'UTF-8'
   }
-
-  afterEvaluate {
-    tasks.withType(AbstractArchiveTask) {
-      duplicatesStrategy = 'fail'
-    }
-  }
-}
-
-task precommit {
-  description "Runs code quality and other precommit checks"
-  group "Verification"
 }

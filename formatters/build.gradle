@@ -1,4 +1,4 @@
 dependencies {
-    testImplementation deps.randomizedtesting.runner
-    testImplementation deps.assertj
+  testImplementation libs.randomizedtesting.runner
+  testImplementation libs.assertj
 }
