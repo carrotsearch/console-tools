@@ -4,6 +4,7 @@ import com.carrotsearch.console.jcommander.JCommander;
 import com.carrotsearch.console.jcommander.ParameterException;
 import com.carrotsearch.console.jcommander.Parameters;
 import com.carrotsearch.console.jcommander.UsageOptions;
+import com.carrotsearch.progresso.annotations.SuppressForbidden;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -143,6 +144,7 @@ public class Launcher {
         .collect(Collectors.toList());
   }
 
+  @SuppressForbidden("access controller API")
   public static void main(String[] args) {
     List<Command<? extends ExitCode>> cmds = Launcher.lookupCommands();
 

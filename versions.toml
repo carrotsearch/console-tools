@@ -6,9 +6,9 @@ log4j = "2.24.3"
 slf4j = "2.0.17"
 randomizedtesting = "2.8.1"
 # @keep This is the minimum required Java version.
-minJava = "11"
+minJava = "21"
 # @keep This is GJF version for spotless/ tidy.
-googleJavaFormat = "1.22.0"
+googleJavaFormat = "1.25.2"
 # @keep spotless formatting of groovy/gradle files
 greclipse = "4.26"
 
