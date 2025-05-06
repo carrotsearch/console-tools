@@ -1,51 +1,49 @@
 
 configure(rootProject) {
-  ext {
-    mavenBuildRepo = file("${buildDir}/maven")
+  def mavenBuildRepo = project.layout.buildDirectory.dir("maven").get().asFile
 
-    published = [
-      ":formatters",
-      ":launcher",
-      ":testing"
-    ]
-  }
+  def published = [
+    ":formatters",
+    ":launcher",
+    ":testing"
+  ]
 
-  task mavenLocalClean(type: Delete) {
+  tasks.register("mavenLocalClean", Delete, {
     delete mavenBuildRepo
-  }
+  })
 
-  task publishLocal() {
-    group "Publishing"
-    description "Publish Maven artifacts locally to " + file(mavenBuildRepo)
-  }
+  tasks.register("publishLocal", {
+    group = "Publishing"
+    description = "Publish Maven artifacts locally to " + file(mavenBuildRepo)
+  })
 
-  task publishSonatype() {
-    group "Publishing"
-    description "Publish Maven artifacts to Sonatype OSS Nexus"
-  }
+  tasks.register("publishSonatype", {
+    group = "Publishing"
+    description = "Publish Maven artifacts to Sonatype OSS Nexus"
+  })
 
-  configure(subprojects.findAll { it.path in rootProject.published }) {
+  configure(subprojects.findAll { it.path in published }) {
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
 
-    plugins.withType(JavaPlugin) {
+    plugins.withType(JavaPlugin).configureEach {
       publishing {
         repositories {
           maven {
             name = 'build'
-            url = rootProject.mavenBuildRepo
+            url = mavenBuildRepo
           }
 
           maven {
             name = 'sonatype'
-            url "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2"
+            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2"
 
             credentials {
               if (project.hasProperty('nexusUsername')) {
-                username project.nexusUsername
+                username = project.nexusUsername
               }
               if (project.hasProperty('nexusPassword')) {
-                password project.nexusPassword
+                password = project.nexusPassword
               }
             }
           }

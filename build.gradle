@@ -11,7 +11,7 @@ apply plugin: 'base'
 allprojects {
   apply plugin: 'idea'
 
-  group "com.carrotsearch.console"
+  group = "com.carrotsearch.console"
   version = libs.versions.consoletools.get()
 
   repositories {
@@ -20,8 +20,8 @@ allprojects {
 
   idea {
     module {
-      outputDir file('build/idea/classes/main')
-      testOutputDir file('build/idea/classes/test')
+      outputDir = file('build/idea/classes/main')
+      testOutputDir = file('build/idea/classes/test')
       downloadSources = true
     }
   }
