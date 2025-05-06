@@ -2,8 +2,8 @@
 # @keep This project's version.
 consoletools = "1.1.5-SNAPSHOT"
 progresso = "1.8.2"
-log4j = { strictly = "2.23.1" }
-slf4j = "2.0.3"
+log4j = "2.24.3"
+slf4j = "2.0.17"
 randomizedtesting = "2.8.1"
 # @keep This is the minimum required Java version.
 minJava = "11"
