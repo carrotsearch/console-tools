@@ -1,10 +1,10 @@
 [versions]
 # @keep This project's version.
 consoletools = "1.1.5-SNAPSHOT"
-progresso = "1.8.2"
+progresso = "1.8.3"
 log4j = "2.24.3"
 slf4j = "2.0.17"
-randomizedtesting = "2.8.1"
+randomizedtesting = "2.8.3"
 # @keep This is the minimum required Java version.
 minJava = "21"
 # @keep This is GJF version for spotless/ tidy.
@@ -24,5 +24,4 @@ randomizedtesting-runner = { module = "com.carrotsearch.randomizedtesting:random
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 
 [plugins]
-node-gradle = "com.github.node-gradle.node:7.0.2"
 buildinfra = "com.carrotsearch.gradle.buildinfra:0.0.9"
