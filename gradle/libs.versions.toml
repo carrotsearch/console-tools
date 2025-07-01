@@ -24,4 +24,4 @@ randomizedtesting-runner = { module = "com.carrotsearch.randomizedtesting:random
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 
 [plugins]
-buildinfra = "com.carrotsearch.gradle.buildinfra:0.0.15"
+buildinfra = "com.carrotsearch.gradle.buildinfra:0.0.16"
