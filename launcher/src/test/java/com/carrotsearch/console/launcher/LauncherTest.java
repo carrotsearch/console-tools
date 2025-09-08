@@ -1,5 +1,6 @@
 package com.carrotsearch.console.launcher;
 
+import com.carrotsearch.console.jcommander.JCommander;
 import com.carrotsearch.console.jcommander.Parameter;
 import com.carrotsearch.console.jcommander.Parameters;
 import com.carrotsearch.console.testing.Logs;
@@ -110,6 +111,36 @@ public class LauncherTest extends TestBase {
 
     logsEqual(
         "LauncherTest_testHelp.txt",
+        () -> {
+          Cmd cmd = new Cmd();
+          Assertions.assertThat(new Launcher().runCommand(cmd, "--help"))
+              .isEqualTo(ExitCodes.SUCCESS);
+        });
+  }
+
+  @Test
+  public void testCustomCommandHelp() throws Throwable {
+    @Parameters(commandNames = "cmd")
+    class Cmd extends Command<ExitCodes> {
+      @Parameter(
+          names = {"--requiredArg"},
+          required = true)
+      public String requiredArg;
+
+      @Override
+      public ExitCodes run() {
+        return ExitCodes.SUCCESS;
+      }
+
+      @Override
+      protected StringBuilder commandHelp(JCommander jcmd, StringBuilder sb) {
+        sb.append("Custom help.");
+        return super.commandHelp(jcmd, sb);
+      }
+    }
+
+    logsEqual(
+        "LauncherTest_testCustomCommandHelp.txt",
         () -> {
           Cmd cmd = new Cmd();
           Assertions.assertThat(new Launcher().runCommand(cmd, "--help"))

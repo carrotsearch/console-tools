@@ -70,15 +70,14 @@ public class Launcher {
 
       String cmd = jc.getParsedCommand();
       if (cmd == null || launcherParameters.help) {
-        Loggers.CONSOLE.info(commandHelp(jc, launcherParameters.hidden));
+        Loggers.CONSOLE.info(commandHelp(jc, null, launcherParameters.hidden));
         return ExitCodes.SUCCESS;
       } else {
         JCommander cmdJc = jc.getCommands().get(cmd);
         List<Object> objects = cmdJc.getObjects();
         assert objects.size() == 1
             : "Expected exactly one object for command '" + cmd + "': " + objects;
-        Command<? extends ExitCode> command =
-            (Command<? extends ExitCode>) objects.iterator().next();
+        Command<? extends ExitCode> command = (Command<? extends ExitCode>) objects.getFirst();
 
         cmdJc.setProgramName(getCommandName(command), "");
         return launchCommand(cmdJc, command);
@@ -168,7 +167,7 @@ public class Launcher {
 
   private <T extends ExitCode> ExitCode launchCommand(JCommander jc, Command<T> cmd) {
     if (cmd.help) {
-      Loggers.CONSOLE.info(commandHelp(jc, false));
+      Loggers.CONSOLE.info(commandHelp(jc, cmd, false));
       return ExitCodes.SUCCESS;
     } else {
       try {
@@ -205,7 +204,7 @@ public class Launcher {
     }
   }
 
-  private String commandHelp(JCommander jc, boolean showHidden) {
+  private String commandHelp(JCommander jc, Command<? extends ExitCode> cmd, boolean showHidden) {
     StringBuilder sb = new StringBuilder();
     jc.usage(
         sb,
@@ -216,6 +215,9 @@ public class Launcher {
         UsageOptions.DISPLAY_COMMANDS,
         UsageOptions.SORT_COMMANDS,
         UsageOptions.GROUP_COMMANDS);
+    if (cmd != null) {
+      sb = cmd.commandHelp(jc, sb);
+    }
     return sb.toString();
   }
 
