@@ -6,7 +6,7 @@ import com.carrotsearch.console.testing.ThrowingCallable;
 import com.carrotsearch.randomizedtesting.RandomizedTest;
 import org.assertj.core.api.Assertions;
 
-abstract class TestBase extends RandomizedTest {
+public abstract class TestBase extends RandomizedTest {
 
   protected void logsEqual(String resourceName, ThrowingCallable callable) throws Throwable {
     Assertions.assertThat(String.join("\n", Logs.captureAsStrings(Loggers.CONSOLE, callable)))

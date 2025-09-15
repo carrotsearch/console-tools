@@ -9,15 +9,12 @@ import com.carrotsearch.console.jcommander.internal.DefaultConsole;
 import com.carrotsearch.console.jcommander.internal.DefaultConverterFactory;
 import com.carrotsearch.console.jcommander.internal.JDK6Console;
 import com.carrotsearch.console.jcommander.internal.Nullable;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -306,7 +303,7 @@ public class JCommander {
 
       if (arg.startsWith("@")) {
         String fileName = arg.substring(1);
-        vResult1.addAll(readFile(fileName));
+        vResult1.addAll(ArgFileParser.expandArgFile(Path.of(fileName)));
       } else {
         List<String> expanded = expandDynamicArg(arg);
         vResult1.addAll(expanded);
@@ -419,47 +416,10 @@ public class JCommander {
     return result;
   }
 
-  /**
-   * Reads the file specified by filename and returns the file content as a string. End of lines are
-   * replaced by a space.
-   *
-   * @param fileName the command line filename
-   * @return the file content as a string.
-   */
-  private static List<String> readFile(String fileName) {
-    List<String> result = new ArrayList();
-
-    try {
-      BufferedReader bufRead =
-          new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "UTF-8"));
-
-      String line;
-
-      // Read through file one line at time. Print line # and line
-      while ((line = bufRead.readLine()) != null) {
-        // Allow empty lines and # comments in these at files
-        if (line.length() > 0 && !line.trim().startsWith("#")) {
-          result.add(line);
-        }
-      }
-
-      bufRead.close();
-    } catch (IOException e) {
-      throw new ParameterException("Could not read file " + fileName + ": " + e);
-    }
-
-    return result;
-  }
-
   /** Remove spaces at both ends and handle double quotes. */
   private static String trim(String string) {
     // Do not remove anything
     return string;
-    //    String result = string.trim();
-    //    if (result.startsWith("\"") && result.endsWith("\"") && result.length() > 1) {
-    //      result = result.substring(1, result.length() - 1);
-    //    }
-    //    return result;
   }
 
   /** Create the ParameterDescriptions for all the \@Parameter found. */
