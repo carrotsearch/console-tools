@@ -8,12 +8,12 @@ randomizedtesting = "2.8.3"
 # @keep This is the minimum required Java version.
 minJava = "21"
 # @keep This is GJF version for spotless/ tidy.
-googleJavaFormat = "1.25.2"
+googleJavaFormat = "1.33.0"
 # @keep spotless formatting of groovy/gradle files
 greclipse = "4.26"
 
 [libraries]
-assertj = { module = "org.assertj:assertj-core", version = { strictly = "3.21.0" } }
+assertj = { module = "org.assertj:assertj-core", version = { strictly = "3.27.6" } }
 progresso-core = { module = "com.carrotsearch.progresso:progresso", version.ref = "progresso" }
 progresso-log4j2 = { module = "com.carrotsearch.progresso:progresso-log4j2", version.ref = "progresso" }
 progresso-consolewidth-unixish = { module = "com.carrotsearch.progresso:progresso-consolewidth-unixish", version.ref = "progresso" }
