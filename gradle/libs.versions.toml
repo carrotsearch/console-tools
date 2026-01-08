@@ -1,6 +1,6 @@
 [versions]
 # @keep This project's version.
-consoletools = "1.4.3"
+consoletools = "1.4.4-SNAPSHOT"
 progresso = "1.8.6"
 log4j = "2.24.3"
 slf4j = "2.0.17"
