@@ -2,7 +2,7 @@ name: Dependabot PR lock file update
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened, synchronize]
 
 jobs:
   update-lockfile:
