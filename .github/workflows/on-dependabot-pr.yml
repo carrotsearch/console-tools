@@ -1,11 +1,11 @@
-name: Dependabot PR Metadata Update
+name: Dependabot PR lock file update
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened]
 
 jobs:
-  update-metadata:
+  update-lockfile:
     if: ${{ github.actor == 'dependabot[bot]' }}
     runs-on: ubuntu-latest
     permissions:
