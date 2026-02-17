@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          token: ${{ secrets.DEPENDABOT_AUTOMATION_TOKEN || secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.DEPENDABOT_AUTOMATION_TOKEN }}
           ref: ${{ github.event.pull_request.head.ref }}
       
       - name: Set up JDK
