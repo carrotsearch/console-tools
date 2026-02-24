@@ -1,6 +1,9 @@
 name: On Commit Checks
 
 on: 
+  workflow_dispatch:
+    # Allow manual dispatch.
+
   pull_request:
     branches:
       - master
@@ -9,10 +12,18 @@ on:
     branches:
       - master
 
+  workflow_run:
+    workflows: ["Dependabot PR lock file update"]
+    types:
+      - completed
+
 jobs:
   tests:
     name: gradle check (JDK ${{ matrix.java }} on ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    if: |
+      github.actor != 'dependabot[bot]' || 
+      github.event_name == 'workflow_run'
 
     strategy:
       matrix:
