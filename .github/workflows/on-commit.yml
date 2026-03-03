@@ -51,7 +51,7 @@ jobs:
 
       - name: Store failed test outputs
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: failed-test-outputs-${{ matrix.os }}
           path: '**/OUTPUT-*.txt'
