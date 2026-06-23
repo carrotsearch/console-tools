@@ -20,7 +20,7 @@
       "org.osgi:org.osgi.annotation.versioning:1.1.2" : "006ec29d,refs=4",
       "org.osgi:org.osgi.resource:1.0.0" : "006ec29d,refs=4",
       "org.osgi:org.osgi.service.serviceloader:1.0.0" : "006ec29d,refs=4",
-      "org.slf4j:slf4j-api:2.0.17" : "292f4795,refs=8"
+      "org.slf4j:slf4j-api:2.0.18" : "292f4795,refs=8"
     }
   },
   "because" : {
