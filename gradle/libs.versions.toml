@@ -3,7 +3,7 @@
 consoletools = "1.4.4-SNAPSHOT"
 progresso = "1.8.6"
 log4j = "2.26.0"
-slf4j = "2.0.17"
+slf4j = "2.0.18"
 randomizedtesting = "2.9.1"
 # @keep This is the minimum required Java version.
 minJava = "21"
