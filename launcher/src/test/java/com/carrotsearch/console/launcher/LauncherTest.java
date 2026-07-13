@@ -437,4 +437,27 @@ public class LauncherTest extends TestBase {
 
     Assertions.assertThat(String.join("\n", logs)).contains("URI: " + testUri);
   }
+
+  @Test
+  public void testJavaVersionTooOldMessage() {
+    int runtimeVersion = Runtime.version().feature();
+    int requiredVersion = runtimeVersion + 2;
+    UnsupportedClassVersionError e =
+        new UnsupportedClassVersionError(
+            "com/example/Foo has been compiled by a more recent version of the Java Runtime"
+                + " (class file version "
+                + (requiredVersion + 44)
+                + ".0), this version of the Java Runtime only recognizes class file versions up to "
+                + (runtimeVersion + 44)
+                + ".0");
+
+    Assertions.assertThat(Launcher.javaVersionTooOldMessage(e))
+        .contains("(" + runtimeVersion + ")")
+        .contains("(" + requiredVersion + ")");
+
+    // Unparseable message: fall back to including the original message.
+    Assertions.assertThat(Launcher.javaVersionTooOldMessage(new UnsupportedClassVersionError("?")))
+        .contains("(" + runtimeVersion + ")")
+        .contains("?");
+  }
 }

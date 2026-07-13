@@ -17,6 +17,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.ServiceLoader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.logging.log4j.LogManager;
@@ -86,6 +88,9 @@ public class Launcher {
       Loggers.CONSOLE.error(
           "Invalid arguments (type {} for help): {}", Command.OPT_HELP, e.getMessage());
       return ExitCodes.ERROR_INVALID_ARGUMENTS;
+    } catch (UnsupportedClassVersionError e) {
+      Loggers.CONSOLE.error(javaVersionTooOldMessage(e));
+      return ExitCodes.ERROR_INTERNAL;
     } catch (Throwable e) {
       Loggers.CONSOLE.error(
           "An unhandled exception occurred while launching commands (use {} to display stack trace): {}",
@@ -118,6 +123,9 @@ public class Launcher {
       Loggers.CONSOLE.error(
           "Invalid arguments (type {} for help): {}", Command.OPT_HELP, e.getMessage());
       return ExitCodes.ERROR_INVALID_ARGUMENTS;
+    } catch (UnsupportedClassVersionError e) {
+      Loggers.CONSOLE.error(javaVersionTooOldMessage(e));
+      return ExitCodes.ERROR_INTERNAL;
     } catch (Exception e) {
       Loggers.CONSOLE.error(
           "An unhandled exception occurred while launching command '{}' (use {} to display stack trace): {}",
@@ -145,11 +153,21 @@ public class Launcher {
 
   @SuppressForbidden("access controller API")
   public static void main(String[] args) {
-    List<Command<? extends ExitCode>> cmds = Launcher.lookupCommands();
+    Launcher launcher = new Launcher();
+
+    List<Command<? extends ExitCode>> cmds;
+    try {
+      cmds = Launcher.lookupCommands();
+    } catch (UnsupportedClassVersionError e) {
+      launcher.configureLoggingDefaults();
+      Loggers.CONSOLE.error(javaVersionTooOldMessage(e));
+      Runtime.getRuntime().exit(ExitCodes.ERROR_INTERNAL.processReturnValue());
+      return;
+    }
 
     ExitCode exitCode;
     if (cmds.size() == 1) {
-      exitCode = new Launcher().runCommand(cmds.iterator().next(), args);
+      exitCode = launcher.runCommand(cmds.iterator().next(), args);
     } else {
       String scriptName =
           Stream.of(
@@ -160,9 +178,35 @@ public class Launcher {
               .findFirst()
               .get();
 
-      exitCode = new Launcher().runCommands(scriptName, cmds, args);
+      exitCode = launcher.runCommands(scriptName, cmds, args);
     }
     Runtime.getRuntime().exit(exitCode.processReturnValue());
+  }
+
+  private static final Pattern CLASS_FILE_VERSION = Pattern.compile("class file version (\\d+)");
+
+  /**
+   * Converts an {@link UnsupportedClassVersionError} into a human-readable message stating the
+   * runtime's Java version and the minimum Java version required by the offending class.
+   */
+  static String javaVersionTooOldMessage(UnsupportedClassVersionError e) {
+    int runtimeVersion = Runtime.version().feature();
+    Matcher m = CLASS_FILE_VERSION.matcher(Objects.toString(e.getMessage(), ""));
+    if (m.find()) {
+      // From class file major version 49 (Java 5) onward, major - 44 is the Java feature
+      // version; majors 45-48 map to Java 1.1-1.4 and cannot be newer than any runtime
+      // capable of running this launcher (https://javaalmanac.io/bytecode/versions/).
+      int major = Integer.parseInt(m.group(1));
+      int requiredVersion = major - 44;
+      if (major >= 49 && requiredVersion > runtimeVersion) {
+        return "Your Java version ("
+            + runtimeVersion
+            + ") is older than the Java version required by this program ("
+            + requiredVersion
+            + ").";
+      }
+    }
+    return "Your Java version (" + runtimeVersion + ") cannot run this program: " + e.getMessage();
   }
 
   private <T extends ExitCode> ExitCode launchCommand(JCommander jc, Command<T> cmd) {
