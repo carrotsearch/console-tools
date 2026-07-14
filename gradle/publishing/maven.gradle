@@ -53,7 +53,7 @@ configure(rootProject) {
 
     onlyIf {
       project.hasProperty('nexusUsername') &&
-          project.hasProperty('nexusPassword')
+      project.hasProperty('nexusPassword')
     }
 
     doFirst {
