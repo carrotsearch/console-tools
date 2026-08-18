@@ -76,11 +76,11 @@ configure(rootProject) {
 
         post.setHeader("Authorization", "Bearer " + token);
         post.setEntity(
-            MultipartEntityBuilder.create()
-            .addTextBody("publishingType", "AUTOMATIC")
-            .addBinaryBody("bundle", bundleFile, ContentType.APPLICATION_OCTET_STREAM, bundleFile.getName())
-            .build()
-            );
+                MultipartEntityBuilder.create()
+                .addTextBody("publishingType", "AUTOMATIC")
+                .addBinaryBody("bundle", bundleFile, ContentType.APPLICATION_OCTET_STREAM, bundleFile.getName())
+                .build()
+                );
 
         CloseableHttpResponse response = (CloseableHttpResponse) client.execute(post)
         try {
