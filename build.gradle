@@ -3,6 +3,9 @@ plugins {
   alias(libs.plugins.buildinfra)
 }
 
+// Configured in gradle/publishing/maven.gradle
+apply plugin: com.carrotsearch.gradle.buildinfra.publishing.mavencentral.MavenCentralPublishingPlugin
+
 apply from: file('gradle/dependencies.gradle')
 apply from: file('gradle/publishing/maven.gradle')
 

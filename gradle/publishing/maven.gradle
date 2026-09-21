@@ -1,187 +1,66 @@
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.impl.classic.*;
-import org.apache.hc.client5.http.entity.mime.*;
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.apache.hc.core5.http.io.entity.InputStreamEntity;
-import org.apache.hc.core5.http.message.StatusLine;
-
-buildscript {
-  dependencies {
-    classpath libs.httpclient5
-  }
-
-  repositories {
-    mavenCentral()
-  }
-}
+// Publishing to Maven Central (via Sonatype's Central Portal): a bundle upload
+// for releases, the snapshot repository for snapshots.
+//
+//   ./gradlew publishToMavenCentral
+//
+// The plugin itself (MavenCentralPublishingPlugin from buildinfra) is applied in the root
+// build script: buildinfra classes are not visible from script plugins.
+//
+// 'publishLocal' and 'prepareMavenCentralBundle' can be used to inspect
+// what would be published (build/maven, build/maven-bundle).
 
 configure(rootProject) {
-  def mavenBuildRepo = project.layout.buildDirectory.dir("maven").get().asFile
+  mavenCentralPublishing {
+    // Do not generate or publish gradle metadata files.
+    gradleModuleMetadata = false
 
-  def published = [
-    ":formatters",
-    ":launcher",
-    ":testing"
-  ]
+    pom {
+      url = 'https://github.com/carrotsearch/console-tools'
+      inceptionYear = "2019"
 
-  tasks.register("mavenLocalClean", Delete, {
-    delete mavenBuildRepo
-  })
+      licenses {
+        license {
+          name = 'BSD License'
+          url = 'https://github.com/carrotsearch/console-tools/blob/master/LICENSE.txt'
+        }
+      }
 
-  tasks.register("publishLocal", {
-    group = "Publishing"
-    description = "Publish Maven artifacts locally to " + file(mavenBuildRepo)
-  })
+      organization {
+        name = "Carrot Search s.c."
+        url = "https://www.carrotsearch.com"
+      }
 
-  tasks.register("prepareMavenCentralBundle", Zip, {
-    dependsOn publishLocal
+      developers {
+        developer {
+          id = 'stanislaw.osinski'
+          name = 'Stanisław Osiński'
+          email = 'stanislaw.osinski@carrotsearch.com'
+        }
+        developer {
+          id = 'dawid.weiss'
+          name = 'Dawid Weiss'
+          email = 'dawid.weiss@carrotsearch.com'
+        }
+      }
 
-    archiveFileName = "bundle-${project.name}-${project.version}.zip"
-    destinationDirectory = project.layout.buildDirectory.dir("maven-bundle")
-
-    from(file(mavenBuildRepo))
-  })
-
-  tasks.register("publishMaven", {
-    group = "Publishing"
-    description = "Publish Maven artifacts to Maven Central"
-
-    dependsOn prepareMavenCentralBundle
-    def bundleFileProvider = prepareMavenCentralBundle.archiveFile
-    inputs.file(bundleFileProvider)
-
-    onlyIf {
-      project.hasProperty('nexusUsername') &&
-      project.hasProperty('nexusPassword')
+      scm {
+        connection = 'scm:git:git@github.com:carrotsearch/console-tools.git'
+        developerConnection = 'scm:git:git@github.com:carrotsearch/console-tools.git'
+        url = 'https://github.com/carrotsearch/console-tools'
+      }
     }
 
-    doFirst {
-      def username = project.properties['nexusUsername']
-      def password = project.properties['nexusPassword']
-
-      // Create base64 encoded token for authentication
-      def token = "${username}:${password}".bytes.encodeBase64().toString()
-
-      def bundleFile = bundleFileProvider.get().getAsFile()
-      logger.lifecycle("Bundle: " + bundleFile)
-
-      if (project.version.endsWith('-SNAPSHOT')) {
-        throw new GradleException("Can't publish snapshots to maven central.")
-      }
-
-      final CloseableHttpClient client = HttpClients.createDefault()
-      try {
-        final HttpPost post = new HttpPost("https://central.sonatype.com/api/v1/publisher/upload");
-
-        post.setHeader("Authorization", "Bearer " + token);
-        post.setEntity(
-                MultipartEntityBuilder.create()
-                .addTextBody("publishingType", "AUTOMATIC")
-                .addBinaryBody("bundle", bundleFile, ContentType.APPLICATION_OCTET_STREAM, bundleFile.getName())
-                .build()
-                );
-
-        CloseableHttpResponse response = (CloseableHttpResponse) client.execute(post)
-        try {
-          System.out.println("Status: " + response.getCode());
-          System.out.println("Reason: " + response.getReasonPhrase());
-          if (response.getCode() != 201) {
-            throw new GradleException("Odd response from maven central?")
-          }
-
-          if (response.getEntity() != null) {
-            String responseBody = new String(response.getEntity().getContent().readAllBytes());
-            System.out.println("Deployment ID: " + responseBody);
-          }
-        } finally {
-          response.close()
-        }
-      } finally {
-        client.close()
-      }
-    }
-  })
-
-  configure(subprojects.findAll { it.path in published }) {
-    apply plugin: 'maven-publish'
-    apply plugin: 'signing'
-
-    // Hack: do not generate or publish gradle metadata files.
-    tasks.withType(GenerateModuleMetadata).configureEach {
-      enabled = false
-    }
-
-    plugins.withType(JavaPlugin).configureEach {
-      publishing {
-        repositories {
-          maven {
-            name = 'build'
-            url = mavenBuildRepo
-          }
+    [
+      ":formatters",
+      ":launcher",
+      ":testing"
+    ].each { path ->
+      project(path) {
+        pom {
+          // Maven Central requires a description; same as the project's name.
+          description = rootProject.project(path).name
         }
       }
-
-      java {
-        withSourcesJar()
-        withJavadocJar()
-      }
-
-      publishing {
-        def configurePom = {
-          name = "${project.name}"
-          description = "${project.name}"
-          url = 'https://github.com/carrotsearch/console-tools'
-          inceptionYear = "2019"
-
-          licenses {
-            license {
-              name = 'BSD License'
-              url = 'https://github.com/carrotsearch/console-tools/blob/master/LICENSE.txt'
-            }
-          }
-
-          organization {
-            name = "Carrot Search s.c."
-            url = "https://www.carrotsearch.com"
-          }
-
-          developers {
-            developer {
-              id = 'stanislaw.osinski'
-              name = 'Stanisław Osiński'
-              email = 'stanislaw.osinski@carrotsearch.com'
-            }
-            developer {
-              id = 'dawid.weiss'
-              name = 'Dawid Weiss'
-              email = 'dawid.weiss@carrotsearch.com'
-            }
-          }
-          scm {
-            connection = 'scm:git:git@github.com:carrotsearch/console-tools.git'
-            developerConnection = 'scm:git:git@github.com:carrotsearch/console-tools.git'
-            url = 'https://github.com/carrotsearch/console-tools'
-          }
-        }
-
-        publications {
-          jars(MavenPublication) {
-            from components.java
-            groupId = project.group
-            artifactId = project.base.archivesName.get()
-
-            pom(configurePom)
-          }
-        }
-      }
-
-      signing {
-        sign publishing.publications.jars
-      }
-
-      publishJarsPublicationToBuildRepository.dependsOn mavenLocalClean
-      publishLocal.dependsOn publishJarsPublicationToBuildRepository
     }
   }
 }
