@@ -21,13 +21,19 @@ javadoc {
 }
 
 jar {
+  def runtimeClasspath = configurations.runtimeClasspath
+  def moduleName = project.group + "." + project.name
+
+  // The manifest's Class-Path is computed in doFirst, declare what it depends on.
+  inputs.files(runtimeClasspath)
+
   doFirst {
     manifest {
       attributes(["Main-Class": "com.carrotsearch.console.launcher.Launcher",
-        "Class-Path": configurations.runtimeClasspath.collect {
+        "Class-Path": runtimeClasspath.collect {
           it.getName()
         }.join(' '),
-        "Automatic-Module-Name": project.group + "." + project.name])
+        "Automatic-Module-Name": moduleName])
     }
   }
 }

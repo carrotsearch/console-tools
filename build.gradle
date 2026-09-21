@@ -15,7 +15,7 @@ allprojects {
   apply plugin: 'idea'
 
   group = "com.carrotsearch.console"
-  version = libs.versions.consoletools.get()
+  version = rootProject.libs.versions.consoletools.get()
 
   repositories {
     mavenCentral()
