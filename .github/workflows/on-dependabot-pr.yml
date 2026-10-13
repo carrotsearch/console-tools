@@ -4,20 +4,33 @@ on:
   pull_request:
     types: [opened, synchronize]
 
+permissions:
+  contents: read
+
+# A newer push to the same pull request supersedes a run still in progress.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   update-lockfile:
-    if: ${{ github.actor == 'dependabot[bot]' }}
+    name: Update the Gradle lock file
+    # The actor check is intentional: the push below (made with the automation token) triggers
+    # a second synchronize event with a different actor, which must not run this job again.
+    if: ${{ github.actor == 'dependabot[bot]' }} # zizmor: ignore[bot-conditions]
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
-      contents: write
+      contents: write # commits the regenerated lock file back to the pull request branch
     steps:
-      - uses: actions/checkout@v7
-        with:
+      # Credentials are persisted deliberately: the final step pushes with this token.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: # zizmor: ignore[artipacked]
           token: ${{ secrets.DEPENDABOT_AUTOMATION_TOKEN }}
           ref: ${{ github.event.pull_request.head.ref }}
-      
+
       - name: Set up JDK
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           java-version: '21'
           distribution: 'temurin'
