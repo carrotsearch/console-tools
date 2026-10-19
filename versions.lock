@@ -3,9 +3,6 @@
   "configurationGroups" : {
     "all" : {
       "biz.aQute.bnd:biz.aQute.bnd.annotation:7.1.0" : "006ec29d,refs=4",
-      "com.carrotsearch.progresso:progresso:1.9.0" : "3a44f6cb,refs=4",
-      "com.carrotsearch.progresso:progresso-consolewidth-unixish:1.9.0" : "3a44f6cb,refs=4",
-      "com.carrotsearch.progresso:progresso-log4j2:1.9.0" : "3a44f6cb,refs=4",
       "com.carrotsearch.randomizedtesting:randomizedtesting-runner:2.9.2" : "66f249ab,refs=4",
       "com.google.errorprone:error_prone_annotations:2.38.0" : "006ec29d,refs=4",
       "junit:junit:4.13.1" : "66f249ab,refs=4",
@@ -74,24 +71,6 @@
       {
         "configuration" : "testRuntimeClasspath",
         "projectPath" : ":testing"
-      }
-    ],
-    "3a44f6cb" : [
-      {
-        "configuration" : "compileClasspath",
-        "projectPath" : ":launcher"
-      },
-      {
-        "configuration" : "runtimeClasspath",
-        "projectPath" : ":launcher"
-      },
-      {
-        "configuration" : "testCompileClasspath",
-        "projectPath" : ":launcher"
-      },
-      {
-        "configuration" : "testRuntimeClasspath",
-        "projectPath" : ":launcher"
       }
     ],
     "66f249ab" : [

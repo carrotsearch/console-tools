@@ -1,7 +1,7 @@
 package com.carrotsearch.console.jcommander.internal;
 
 import com.carrotsearch.console.jcommander.ParameterException;
-import com.carrotsearch.progresso.annotations.SuppressForbidden;
+import com.carrotsearch.console.launcher.SuppressForbidden;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

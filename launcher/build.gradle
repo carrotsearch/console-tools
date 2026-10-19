@@ -2,10 +2,6 @@
 dependencies {
   api libs.slf4j.api
 
-  api libs.progresso.core
-  api libs.progresso.log4j2
-  api libs.progresso.consolewidth.unixish
-
   api libs.log4j.core
   api libs.log4j.slf4j2
 
